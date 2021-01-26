@@ -3,14 +3,14 @@
         "id": "bc4bb43.39904c8",
         "type": "tab",
         "label": "Flow 1",
-        "disabled": false,
+        "disabled": true,
         "info": ""
     },
     {
         "id": "7fddfb51.6bbd1c",
         "type": "tab",
         "label": "Termostato",
-        "disabled": false,
+        "disabled": true,
         "info": ""
     },
     {
@@ -141,12 +141,19 @@
             "abf675ce.11908",
             "7e4312eb.f956d4",
             "e8e314bd.a71b3",
-            "c21d85b7.3ee3b8"
+            "c21d85b7.3ee3b8",
+            "c631046e.8ca3c8",
+            "f2cf6724.bd0018",
+            "a4281f0d.0d1ed",
+            "510a9441.d409dc",
+            "72a471d2.0acf8",
+            "5fb4989e.368718",
+            "f4d76832.8e8ea8"
         ],
         "x": -6,
-        "y": 1179,
-        "w": 1032,
-        "h": 262
+        "y": 1159,
+        "w": 992,
+        "h": 462
     },
     {
         "id": "dfad00fc.e2b86",
@@ -665,7 +672,7 @@
         "type": "debug",
         "z": "7fddfb51.6bbd1c",
         "name": "Temperatura Sensor",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -871,7 +878,7 @@
         "z": "7fddfb51.6bbd1c",
         "g": "17f2f3da.ba1ccc",
         "name": "",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -989,13 +996,13 @@
         "z": "7fddfb51.6bbd1c",
         "g": "b72374e2.0018a",
         "name": "write Temp's",
-        "filename": "${IOT_DATA}/termostato/log.csv",
+        "filename": "",
         "appendNewline": false,
         "createDir": false,
         "overwriteFile": "false",
         "encoding": "none",
-        "x": 930,
-        "y": 1320,
+        "x": 890,
+        "y": 1540,
         "wires": [
             []
         ]
@@ -1023,7 +1030,7 @@
         "payload": "",
         "payloadType": "date",
         "x": 110,
-        "y": 1258,
+        "y": 1238,
         "wires": [
             [
                 "abf675ce.11908"
@@ -1046,8 +1053,8 @@
         "strings": true,
         "include_empty_strings": "",
         "include_null_values": "",
-        "x": 770,
-        "y": 1320,
+        "x": 730,
+        "y": 1540,
         "wires": [
             [
                 "ff553b37.2d542"
@@ -1066,11 +1073,11 @@
         "initialize": "",
         "finalize": "",
         "x": 520,
-        "y": 1259,
+        "y": 1239,
         "wires": [
             [
-                "7e4312eb.f956d4",
-                "e8e314bd.a71b3"
+                "e8e314bd.a71b3",
+                "f2cf6724.bd0018"
             ]
         ]
     },
@@ -1113,7 +1120,7 @@
         "outputType": "msg",
         "outTz": "Europe/Madrid",
         "x": 300,
-        "y": 1258,
+        "y": 1238,
         "wires": [
             [
                 "7880f196.0a91"
@@ -1194,7 +1201,7 @@
         "type": "debug",
         "z": "7fddfb51.6bbd1c",
         "name": "RespSonoff",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -1280,13 +1287,13 @@
         "z": "7fddfb51.6bbd1c",
         "g": "b72374e2.0018a",
         "name": "Compare prev State",
-        "func": "\nvar ant = flow.get(\"antWriteState\") || {};\n\nfunction isEqual(object1, object2) {\n  const keys1 = Object.keys(object1);\n  const keys2 = Object.keys(object2);\n\n  if (keys1.length !== keys2.length) {\n    return false;\n  }\n\n  for (let key of keys1) {\n    if (key !== \"timestamp\" &&\n        object1[key] !== object2[key]) {\n      return false;\n    }\n  }\n\n  return true;\n}\n\nif (!isEqual(msg.payload, ant)){\n    flow.set(\"antWriteState\",msg.payload);\n    return msg;\n}\n",
+        "func": "\nvar ant = flow.get(\"antWriteState\") || {};\n\nfunction isEqual(object1, object2) {\n  const keys1 = Object.keys(object1);\n  const keys2 = Object.keys(object2);\n\n  if (keys1.length !== keys2.length) {\n    return false;\n  }\n\n  for (let key of keys1) {\n    if (key !== \"timestamp\" &&\n        object1[key] !== object2[key]) {\n      return false;\n    }\n  }\n\n  return true;\n}\n\nif (!isEqual(msg.payload, ant)){\n    flow.set(\"antWriteState\",msg.payload);\n    msg.filename = env.get(\"IOT_DATA\")+\"/termostato/log.csv\"\n    return msg;\n}\n",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
-        "x": 540,
-        "y": 1320,
+        "x": 500,
+        "y": 1500,
         "wires": [
             [
                 "b1285280.2ada48",
@@ -1309,7 +1316,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 720,
-        "y": 1220,
+        "y": 1200,
         "wires": []
     },
     {
@@ -1318,16 +1325,16 @@
         "z": "7fddfb51.6bbd1c",
         "g": "b72374e2.0018a",
         "name": "escribeSiDistinto",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
+        "complete": "true",
+        "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 530,
-        "y": 1400,
+        "x": 490,
+        "y": 1580,
         "wires": []
     },
     {
@@ -2039,7 +2046,8 @@
                 "36555b84.b40e54"
             ],
             [
-                "c88c55ea.ef4998"
+                "c88c55ea.ef4998",
+                "8feb4259.fae1d"
             ]
         ]
     },
@@ -2788,20 +2796,192 @@
         "type": "telegram command",
         "z": "5dddf6dd.c8bf48",
         "name": "",
-        "command": "/estado",
+        "command": "/estado@iotjvr68_bot",
         "bot": "ec276bbe.bcc1",
         "strict": true,
         "hasresponse": true,
         "useregex": false,
         "removeregexcommand": false,
         "outputs": 2,
-        "x": 310,
+        "x": 360,
         "y": 1560,
         "wires": [
             [
-                "c88c55ea.ef4998"
+                "c88c55ea.ef4998",
+                "2da3810c.610fee"
             ],
             []
         ]
+    },
+    {
+        "id": "c631046e.8ca3c8",
+        "type": "switch",
+        "z": "7fddfb51.6bbd1c",
+        "g": "b72374e2.0018a",
+        "name": "roll_log?",
+        "property": "roll_log",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "true"
+            },
+            {
+                "t": "false"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 520,
+        "y": 1340,
+        "wires": [
+            [
+                "a4281f0d.0d1ed",
+                "5fb4989e.368718"
+            ],
+            [
+                "7e4312eb.f956d4"
+            ]
+        ]
+    },
+    {
+        "id": "f2cf6724.bd0018",
+        "type": "function",
+        "z": "7fddfb51.6bbd1c",
+        "g": "b72374e2.0018a",
+        "name": "roll_log",
+        "func": "var ant = flow.get(\"antWriteState\") || {};\nmsg.file = \"log.csv\";\n\nmsg.roll_log = false;\nmsg.filename = env.get(\"IOT_DATA\")+\"/termostato/\"+msg.file;\n\n//si cambia de día roll de log.csv\nif (ant.hasOwnProperty(\"timestamp\")){\n    msg.roll_log = ant.timestamp.substring (0,10) !==\n                   msg.payload.timestamp.substring(0,10);\n    if (msg.roll_log){\n        msg.reset = true;\n        msg.roll = {\n            pathlog: env.get(\"IOT_DATA\")+\"/termostato\",\n            pathroll:env.get(\"IOT_DATA\")+\"/termostato/back\",\n            fileroll: \"log_\"+ant.timestamp.substring(0,10)+\".csv\"\n        }\n    }\n}\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 520,
+        "y": 1280,
+        "wires": [
+            [
+                "c631046e.8ca3c8"
+            ]
+        ]
+    },
+    {
+        "id": "a4281f0d.0d1ed",
+        "type": "fs-ops-move",
+        "z": "7fddfb51.6bbd1c",
+        "g": "b72374e2.0018a",
+        "name": "rolling log",
+        "sourcePath": "roll.pathlog",
+        "sourcePathType": "msg",
+        "sourceFilename": "file",
+        "sourceFilenameType": "msg",
+        "destPath": "roll.pathroll",
+        "destPathType": "msg",
+        "destFilename": "roll.fileroll",
+        "destFilenameType": "msg",
+        "link": false,
+        "x": 840,
+        "y": 1340,
+        "wires": [
+            [
+                "7e4312eb.f956d4"
+            ]
+        ]
+    },
+    {
+        "id": "510a9441.d409dc",
+        "type": "comment",
+        "z": "7fddfb51.6bbd1c",
+        "g": "b72374e2.0018a",
+        "name": "True",
+        "info": "",
+        "x": 710,
+        "y": 1320,
+        "wires": []
+    },
+    {
+        "id": "72a471d2.0acf8",
+        "type": "comment",
+        "z": "7fddfb51.6bbd1c",
+        "g": "b72374e2.0018a",
+        "name": "false",
+        "info": "",
+        "x": 550,
+        "y": 1400,
+        "wires": []
+    },
+    {
+        "id": "5fb4989e.368718",
+        "type": "debug",
+        "z": "7fddfb51.6bbd1c",
+        "g": "b72374e2.0018a",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "roll",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 770,
+        "y": 1280,
+        "wires": []
+    },
+    {
+        "id": "f4d76832.8e8ea8",
+        "type": "inject",
+        "z": "7fddfb51.6bbd1c",
+        "g": "b72374e2.0018a",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "2021-01-27 12:00:00",
+        "payloadType": "str",
+        "x": 250,
+        "y": 1340,
+        "wires": [
+            [
+                "7880f196.0a91"
+            ]
+        ]
+    },
+    {
+        "id": "2da3810c.610fee",
+        "type": "debug",
+        "z": "5dddf6dd.c8bf48",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 460,
+        "y": 1480,
+        "wires": []
+    },
+    {
+        "id": "8feb4259.fae1d",
+        "type": "debug",
+        "z": "5dddf6dd.c8bf48",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 380,
+        "y": 820,
+        "wires": []
     }
 ]
