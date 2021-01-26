@@ -14,6 +14,13 @@
         "info": ""
     },
     {
+        "id": "5dddf6dd.c8bf48",
+        "type": "tab",
+        "label": "iotBot",
+        "disabled": false,
+        "info": ""
+    },
+    {
         "id": "354011e5.cfbca6",
         "type": "subflow",
         "name": "confTermostato",
@@ -296,6 +303,30 @@
         "willTopic": "",
         "willQos": "0",
         "willPayload": ""
+    },
+    {
+        "id": "ec276bbe.bcc1",
+        "type": "telegram bot",
+        "botname": "casa_iot@iotjvr68_bot",
+        "usernames": "",
+        "chatids": "",
+        "baseapiurl": "",
+        "updatemode": "polling",
+        "pollinterval": "1000",
+        "usesocks": false,
+        "sockshost": "",
+        "socksport": "6667",
+        "socksusername": "anonymous",
+        "sockspassword": "",
+        "bothost": "",
+        "botpath": "",
+        "localbotport": "8443",
+        "publicbotport": "8443",
+        "privatekey": "",
+        "certificate": "",
+        "useselfsignedcertificate": false,
+        "sslterminated": false,
+        "verboselogging": false
     },
     {
         "id": "b4a733ba.a1dc3",
@@ -1830,5 +1861,947 @@
         "x": 930,
         "y": 160,
         "wires": []
+    },
+    {
+        "id": "286f517c.4abebe",
+        "type": "telegram receiver",
+        "z": "5dddf6dd.c8bf48",
+        "name": "BotIn",
+        "bot": "ec276bbe.bcc1",
+        "saveDataDir": "",
+        "filterCommands": false,
+        "x": 90,
+        "y": 480,
+        "wires": [
+            [
+                "f07f6740.183ee8",
+                "1ca83cab.1f7833"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "f07f6740.183ee8",
+        "type": "switch",
+        "z": "5dddf6dd.c8bf48",
+        "name": "^/command$",
+        "property": "payload.content",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^/start$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "^/help",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "^/status",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "^/mqtt",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "^/ping",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "^/uptime$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "^/forum$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "^/lamp$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "^/df$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "^/sock$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "^/comm$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "^/triv",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "^/true",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "^/false",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "^/score",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 16,
+        "x": 330,
+        "y": 540,
+        "wires": [
+            [
+                "c65378ea.f44c98"
+            ],
+            [
+                "ffd267e2.166518"
+            ],
+            [
+                "ffb1c88c.bd1eb8"
+            ],
+            [
+                "463d9bcd.fea7d4"
+            ],
+            [
+                "ac0be385.20b0b"
+            ],
+            [
+                "d4a2df8f.6275f"
+            ],
+            [
+                "979886d9.293408"
+            ],
+            [
+                "e25de4b7.fa3e78"
+            ],
+            [
+                "a0f35539.c70d58"
+            ],
+            [
+                "eb1ad191.cafda"
+            ],
+            [
+                "59db21a4.9bc24",
+                "9db2259c.56b598"
+            ],
+            [
+                "b8c948f9.43a508",
+                "36555b84.b40e54"
+            ],
+            [
+                "fb781c0f.2869b",
+                "36555b84.b40e54"
+            ],
+            [
+                "fb781c0f.2869b",
+                "36555b84.b40e54"
+            ],
+            [
+                "b8687a86.931198",
+                "36555b84.b40e54"
+            ],
+            [
+                "c88c55ea.ef4998"
+            ]
+        ]
+    },
+    {
+        "id": "5f4ddee7.c2a3b",
+        "type": "telegram sender",
+        "z": "5dddf6dd.c8bf48",
+        "name": "UNIXForumBot",
+        "bot": "ec276bbe.bcc1",
+        "haserroroutput": false,
+        "outputs": 1,
+        "x": 1900,
+        "y": 400,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ffd267e2.166518",
+        "type": "function",
+        "z": "5dddf6dd.c8bf48",
+        "name": "^/help$",
+        "func": "\nvar chat = msg.payload.chatId;\nvar device = msg.originalMessage.from.first_name;\nif(device.length < 1)\n{\n     device = 'CyberWarrior '+chat;\n}\nmsg.payload = {};\nmsg.payload.chatId = chat;\nmsg.payload.type = \"message\";\nmsg.payload.content = \"Hi \"+device+\"\\n /help for this menu.\";\n//msg.payload.content += \"\\n /triv play computer trivia.\\n /score get trivia scores.\nmsg.payload.content += \"\\n /uptime for server uptime.\\n /forum for forum online info.\\n /lamp for apache & mysql info.\\n /df for root disk info.\\n /sock for discourse socket info.\"\nmsg.payload.content += \"\\n /comm ping community.\";\nmsg.payload.content += \"\\n /ping basic ping test.\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 690,
+        "y": 160,
+        "wires": [
+            [
+                "a1acd6f7.1077c8"
+            ]
+        ]
+    },
+    {
+        "id": "463d9bcd.fea7d4",
+        "type": "function",
+        "z": "5dddf6dd.c8bf48",
+        "name": "^/mqtt",
+        "func": "var chat = msg.payload.chatId;\nvar device = msg.originalMessage.from.first_name;\nif(device.length < 1)\n{\n     device = 'CyberWarrior '+chat;\n}\nmsg.payload = {};\nmsg.payload.chatId = chat;\nmsg.payload.type = \"message\";\nmsg.payload.content = \"Hi \"+device+\"! MQTT is not yet available.\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 680,
+        "y": 240,
+        "wires": [
+            [
+                "a1acd6f7.1077c8"
+            ]
+        ]
+    },
+    {
+        "id": "ffb1c88c.bd1eb8",
+        "type": "function",
+        "z": "5dddf6dd.c8bf48",
+        "name": "^/status",
+        "func": "var chat = msg.payload.chatId;\nvar device = msg.originalMessage.from.first_name;\nif(device.length < 1)\n{\n     device = 'CyberWarrior '+chat;\n}\nmsg.payload = {};\nmsg.payload.chatId = chat;\nmsg.payload.type = \"message\";\nmsg.payload.content = \"Hi \"+device+\"! UnixForumBot is alive!  Try /help for more functions.\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 690,
+        "y": 200,
+        "wires": [
+            [
+                "a1acd6f7.1077c8"
+            ]
+        ]
+    },
+    {
+        "id": "ac0be385.20b0b",
+        "type": "function",
+        "z": "5dddf6dd.c8bf48",
+        "name": "^/ping",
+        "func": "var chat = msg.payload.chatId;\nvar device = msg.originalMessage.from.first_name;\nif(device.length < 1)\n{\n     device = 'CyberWarrior '+chat;\n}\nmsg.payload = {};\nmsg.payload.chatId = chat;\nmsg.payload.type = \"message\";\nmsg.payload.content = \"Hi \"+device+\"! UNIX.com is UP\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 680,
+        "y": 280,
+        "wires": [
+            [
+                "a1acd6f7.1077c8"
+            ]
+        ]
+    },
+    {
+        "id": "c88c55ea.ef4998",
+        "type": "function",
+        "z": "5dddf6dd.c8bf48",
+        "name": "^/otherwise",
+        "func": "var chat = msg.payload.chatId;\nvar command = msg.payload.content;\nvar device = msg.originalMessage.from.first_name;\nif(device.length < 1)\n{\n     device = 'CyberWarrior '+chat;\n}\nmsg.payload = {};\nmsg.payload.chatId = chat;\nmsg.payload.type = \"message\";\nmsg.payload.content = \"Hi \"+device+\"! Sorry, I do not yet understand '\"+command+\"'. Try /help for more options.\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 720,
+        "y": 1560,
+        "wires": [
+            [
+                "9c541198.73922"
+            ]
+        ]
+    },
+    {
+        "id": "c65378ea.f44c98",
+        "type": "function",
+        "z": "5dddf6dd.c8bf48",
+        "name": "^/start$",
+        "func": "\nvar chat = msg.payload.chatId;\nvar device = msg.originalMessage.from.first_name;\nif(device.length < 1)\n{\n     device = 'CyberWarrior '+chat;\n}\n\nmsg.payload = {};\nmsg.payload.chatId = chat;\nmsg.payload.type = \"message\";\nmsg.payload.content = \"Hi \"+device+\"! Welecome to the UNIX Forum Bot.  Reply with /help for more information.\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 690,
+        "y": 120,
+        "wires": [
+            [
+                "a1acd6f7.1077c8"
+            ]
+        ]
+    },
+    {
+        "id": "d4a2df8f.6275f",
+        "type": "function",
+        "z": "5dddf6dd.c8bf48",
+        "name": "^/uptime",
+        "func": "var chat = msg.payload.chatId;\nmsg.payload = {};\nmsg.payload.chatId = chat;\nmsg.payload.type = \"message\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 690,
+        "y": 320,
+        "wires": [
+            [
+                "ae226783.328318"
+            ]
+        ]
+    },
+    {
+        "id": "ae226783.328318",
+        "type": "join",
+        "z": "5dddf6dd.c8bf48",
+        "name": "",
+        "mode": "custom",
+        "build": "array",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": false,
+        "timeout": "",
+        "count": "3",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 850,
+        "y": 360,
+        "wires": [
+            [
+                "ff4b6f9a.a2b59"
+            ]
+        ]
+    },
+    {
+        "id": "ff4b6f9a.a2b59",
+        "type": "function",
+        "z": "5dddf6dd.c8bf48",
+        "name": "/uptime",
+        "func": "\nvar message = msg.payload[1];\nvar chat = msg.payload[0].chatId;\nvar type = msg.payload[0].type;\nnewMsg = {payload:{chatId:chat,type:type,content:message}};\nreturn newMsg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1030,
+        "y": 360,
+        "wires": [
+            [
+                "efa2548c.43d328"
+            ]
+        ]
+    },
+    {
+        "id": "979886d9.293408",
+        "type": "function",
+        "z": "5dddf6dd.c8bf48",
+        "name": "^/forum",
+        "func": "var chat = msg.payload.chatId;\ndevice = msg.originalMessage.from.first_name;\nmsg.payload = {};\nmsg.payload.chatId = chat;\nmsg.payload.type = \"message\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 690,
+        "y": 420,
+        "wires": [
+            [
+                "309e3f5b.958fc"
+            ]
+        ]
+    },
+    {
+        "id": "309e3f5b.958fc",
+        "type": "join",
+        "z": "5dddf6dd.c8bf48",
+        "name": "",
+        "mode": "custom",
+        "build": "array",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": false,
+        "timeout": "",
+        "count": "3",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 850,
+        "y": 420,
+        "wires": [
+            [
+                "5af25ffc.8e798"
+            ]
+        ]
+    },
+    {
+        "id": "5af25ffc.8e798",
+        "type": "function",
+        "z": "5dddf6dd.c8bf48",
+        "name": "/forum",
+        "func": "\nvar forum = msg.payload[1];\nvar p = forum.split(\":\");\nvar message = \"Members: \"+p[0]+\", Guests: \"+p[1]+ \", Bots: \"+p[2]+\", Total: \"+p[3];\nvar chat = msg.payload[0].chatId;\nvar type = msg.payload[0].type;\nnewMsg = {payload:{chatId:chat,type:type,content:message}};\nreturn newMsg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1020,
+        "y": 420,
+        "wires": [
+            [
+                "efa2548c.43d328"
+            ]
+        ]
+    },
+    {
+        "id": "e25de4b7.fa3e78",
+        "type": "function",
+        "z": "5dddf6dd.c8bf48",
+        "name": "^/lamp",
+        "func": "var chat = msg.payload.chatId;\nmsg.payload = {};\nmsg.payload.chatId = chat;\nmsg.payload.type = \"message\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 680,
+        "y": 520,
+        "wires": [
+            [
+                "ce972bf7.99bf18"
+            ]
+        ]
+    },
+    {
+        "id": "ce972bf7.99bf18",
+        "type": "join",
+        "z": "5dddf6dd.c8bf48",
+        "name": "",
+        "mode": "custom",
+        "build": "array",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": false,
+        "timeout": "",
+        "count": "5",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 850,
+        "y": 560,
+        "wires": [
+            [
+                "5c361ce2.9d55c4"
+            ]
+        ]
+    },
+    {
+        "id": "5c361ce2.9d55c4",
+        "type": "function",
+        "z": "5dddf6dd.c8bf48",
+        "name": "/lamp",
+        "func": "\nvar cpus = msg.payload[1];\nvar apache = msg.payload[3];\nvar message = cpus+\", Apache Processes: \"+apache;\n//var p = forum.split(\":\");\n//var message = \"Members: \"+p[0]+\", Guests: \"+p[1]+ \", Bots: \"+p[2]+\", Total: \"+p[3];\nvar chat = msg.payload[0].chatId;\nvar type = msg.payload[0].type;\nnewMsg = {payload:{chatId:chat,type:type,content:message}};\nreturn newMsg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1020,
+        "y": 560,
+        "wires": [
+            [
+                "efa2548c.43d328"
+            ]
+        ]
+    },
+    {
+        "id": "a0f35539.c70d58",
+        "type": "function",
+        "z": "5dddf6dd.c8bf48",
+        "name": "^/df",
+        "func": "var chat = msg.payload.chatId;\nmsg.payload = {};\nmsg.payload.chatId = chat;\nmsg.payload.type = \"message\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 670,
+        "y": 720,
+        "wires": [
+            [
+                "d35cc58.c1dae38"
+            ]
+        ]
+    },
+    {
+        "id": "d35cc58.c1dae38",
+        "type": "join",
+        "z": "5dddf6dd.c8bf48",
+        "name": "",
+        "mode": "custom",
+        "build": "array",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": false,
+        "timeout": "",
+        "count": "3",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 850,
+        "y": 720,
+        "wires": [
+            [
+                "7c495da3.a2daf4"
+            ]
+        ]
+    },
+    {
+        "id": "7c495da3.a2daf4",
+        "type": "function",
+        "z": "5dddf6dd.c8bf48",
+        "name": "/df",
+        "func": "\nvar df = msg.payload[1];\nvar p = df.split(/[ ]+/);\nvar message = p[0]+ \" is \"+ p[4] +\" full\";\nvar chat = msg.payload[0].chatId;\nvar type = msg.payload[0].type;\nnewMsg = {payload:{chatId:chat,type:type,content:message}};\nreturn newMsg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1010,
+        "y": 720,
+        "wires": [
+            [
+                "efa2548c.43d328"
+            ]
+        ]
+    },
+    {
+        "id": "1ca83cab.1f7833",
+        "type": "function",
+        "z": "5dddf6dd.c8bf48",
+        "d": true,
+        "name": "To MySQL",
+        "func": "var mysql = global.get(\"mysql\");\nvar connection = mysql.createConnection({\n  host: \"localhost\",\n  user: \"root\",\n  port: \"/var/run/mysqld/mysqld.sock\",\n  password: \"PASSWORD\",\n  database: \"my_db\"\n});\nvar newMsg = {};\n\nif (msg.originalMessage.date) {\n  var unixtime = msg.originalMessage.date;\n} else {\n  unixtime = 9999;\n}\n\nif (msg.originalMessage.message_id) {\n  var messageid = msg.originalMessage.message_id;\n} else {\n  messageid = 9999;\n}\n\nif (msg.originalMessage.from.id) {\n  var chatid = msg.originalMessage.from.id;\n} else {\n  chatid = 9999;\n}\n\nif (msg.originalMessage.from.first_name) {\n  var first_name = msg.originalMessage.from.first_name;\n} else {\n  first_name = \"Unknown\";\n}\n\nif (msg.originalMessage.from.username) {\n  var username = msg.originalMessage.from.username;\n} else {\n  username = \"CyberWarrior \"+chatid;\n}\nif (msg.payload.content) {\n  var rawcontent = msg.payload.content;\n} else {\n  rawcontent = \"Unknown\";\n}\nif (msg.payload.type) {\n  var type = msg.payload.type;\n} else {\n  type  = \"Unknown\";\n}\nvar content = rawcontent.replace(/[^a-zA-Z0-9\\/ ]/g, \"*\");\n\nconnection.query(\n  \"INSERT INTO telegram_bot_receiver (dateline, chatid,messageid,type,content,first_name,username) VALUES ('\" +\n    unixtime +\n    \"','\" +\n    chatid +\n    \"','\" +\n    messageid +\n    \"','\" +\n    type +\n    \"','\" +\n    content +\n    \"','\" +\n    first_name +\n    \"','\" +\n    username +\n    \"')\",\n  function(err, results, fields) {\n    console.log(err);\n    console.log(results);\n    connection.end();\n  }\n);\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 340,
+        "y": 200,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ab6a8aeb.3e1918",
+        "type": "link in",
+        "z": "5dddf6dd.c8bf48",
+        "name": "NEW_QUESTION_TO_BOT_IN",
+        "links": [
+            "bb81140a.58bd28"
+        ],
+        "x": 1675,
+        "y": 1380,
+        "wires": [
+            [
+                "5f4ddee7.c2a3b"
+            ]
+        ]
+    },
+    {
+        "id": "fb781c0f.2869b",
+        "type": "link out",
+        "z": "5dddf6dd.c8bf48",
+        "name": "SWITCH_TRIVIA_TRUE_FALSE_OUT",
+        "links": [
+            "16fa46a1.f604c9"
+        ],
+        "x": 655,
+        "y": 1420,
+        "wires": []
+    },
+    {
+        "id": "b8c948f9.43a508",
+        "type": "link out",
+        "z": "5dddf6dd.c8bf48",
+        "name": "BOT_SWITCH_OUT",
+        "links": [
+            "39804338.ba3b9c"
+        ],
+        "x": 655,
+        "y": 1380,
+        "wires": []
+    },
+    {
+        "id": "694b6afa.99ca44",
+        "type": "link in",
+        "z": "5dddf6dd.c8bf48",
+        "name": "ANSWERED_T_F_TO_BOT_IN",
+        "links": [
+            "e7b292b3.6f1d7"
+        ],
+        "x": 1675,
+        "y": 1420,
+        "wires": [
+            [
+                "5f4ddee7.c2a3b"
+            ]
+        ]
+    },
+    {
+        "id": "b8687a86.931198",
+        "type": "link out",
+        "z": "5dddf6dd.c8bf48",
+        "name": "SWITCH_SCORE_OUT",
+        "links": [
+            "f20a0795.d9e3f8"
+        ],
+        "x": 655,
+        "y": 1460,
+        "wires": []
+    },
+    {
+        "id": "765f32b0.5b309c",
+        "type": "link in",
+        "z": "5dddf6dd.c8bf48",
+        "name": "TRIVIA_SCORE_IN",
+        "links": [
+            "890f5447.169798"
+        ],
+        "x": 1675,
+        "y": 1460,
+        "wires": [
+            [
+                "5f4ddee7.c2a3b"
+            ]
+        ]
+    },
+    {
+        "id": "36555b84.b40e54",
+        "type": "function",
+        "z": "5dddf6dd.c8bf48",
+        "name": "Trivia Disabled",
+        "func": "var chat = msg.payload.chatId;\nvar command = msg.payload.content;\nvar device = msg.originalMessage.from.first_name;\nif(device.length < 1)\n{\n     device = 'CyberWarrior '+chat;\n}\nmsg.payload = {};\nmsg.payload.chatId = chat;\nmsg.payload.type = \"message\";\nmsg.payload.content = \"Hi \"+device+\"! Sorry, trivia is temporarily disabled. Try /help for more options.\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 730,
+        "y": 1520,
+        "wires": [
+            [
+                "9c541198.73922"
+            ]
+        ]
+    },
+    {
+        "id": "eb1ad191.cafda",
+        "type": "function",
+        "z": "5dddf6dd.c8bf48",
+        "name": "^/sock",
+        "func": "var chat = msg.payload.chatId;\nmsg.payload = {};\nmsg.payload.chatId = chat;\nmsg.payload.type = \"message\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 680,
+        "y": 840,
+        "wires": [
+            [
+                "cd2814da.b08ad8"
+            ]
+        ]
+    },
+    {
+        "id": "cd2814da.b08ad8",
+        "type": "join",
+        "z": "5dddf6dd.c8bf48",
+        "name": "",
+        "mode": "custom",
+        "build": "array",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": false,
+        "timeout": "",
+        "count": "3",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 850,
+        "y": 820,
+        "wires": [
+            [
+                "c5ba99c7.4ae4a8",
+                "bf46b83b.8bf208"
+            ]
+        ]
+    },
+    {
+        "id": "c5ba99c7.4ae4a8",
+        "type": "function",
+        "z": "5dddf6dd.c8bf48",
+        "name": "/sock",
+        "func": "\nvar message = msg.payload[2];\nvar chat = msg.payload[1].chatId;\nvar type = msg.payload[1].type;\nnewMsg = {payload:{chatId:chat,type:type,content:message}};\nreturn newMsg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1020,
+        "y": 820,
+        "wires": [
+            [
+                "efa2548c.43d328"
+            ]
+        ]
+    },
+    {
+        "id": "bf46b83b.8bf208",
+        "type": "debug",
+        "z": "5dddf6dd.c8bf48",
+        "name": "NEO",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 1010,
+        "y": 880,
+        "wires": []
+    },
+    {
+        "id": "10b1eb31.a65725",
+        "type": "link in",
+        "z": "5dddf6dd.c8bf48",
+        "name": "Telegram In",
+        "links": [
+            "a1acd6f7.1077c8"
+        ],
+        "x": 1555,
+        "y": 200,
+        "wires": [
+            [
+                "5f4ddee7.c2a3b"
+            ]
+        ]
+    },
+    {
+        "id": "a1acd6f7.1077c8",
+        "type": "link out",
+        "z": "5dddf6dd.c8bf48",
+        "name": "To Telegram",
+        "links": [
+            "10b1eb31.a65725"
+        ],
+        "x": 1035,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "b1601afc.710bd8",
+        "type": "link in",
+        "z": "5dddf6dd.c8bf48",
+        "name": "Otherwise In",
+        "links": [
+            "9c541198.73922"
+        ],
+        "x": 1675,
+        "y": 1520,
+        "wires": [
+            [
+                "5f4ddee7.c2a3b"
+            ]
+        ]
+    },
+    {
+        "id": "9c541198.73922",
+        "type": "link out",
+        "z": "5dddf6dd.c8bf48",
+        "name": "Otherwise Out",
+        "links": [
+            "b1601afc.710bd8"
+        ],
+        "x": 1015,
+        "y": 1520,
+        "wires": []
+    },
+    {
+        "id": "efa2548c.43d328",
+        "type": "link out",
+        "z": "5dddf6dd.c8bf48",
+        "name": "Telegram Out 2",
+        "links": [
+            "7d708d65.260ec4"
+        ],
+        "x": 1415,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "7d708d65.260ec4",
+        "type": "link in",
+        "z": "5dddf6dd.c8bf48",
+        "name": "Telegram In 2",
+        "links": [
+            "efa2548c.43d328"
+        ],
+        "x": 1595,
+        "y": 500,
+        "wires": [
+            [
+                "5f4ddee7.c2a3b"
+            ]
+        ]
+    },
+    {
+        "id": "9db2259c.56b598",
+        "type": "http request",
+        "z": "5dddf6dd.c8bf48",
+        "name": "/comm",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "https://community.unix.com/c/125.json",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 680,
+        "y": 980,
+        "wires": [
+            [
+                "ffb50bbf.0ef1a8"
+            ]
+        ]
+    },
+    {
+        "id": "59db21a4.9bc24",
+        "type": "function",
+        "z": "5dddf6dd.c8bf48",
+        "name": "^/comm",
+        "func": "var chat = msg.payload.chatId;\nmsg.payload = {};\nmsg.payload.chatId = chat;\nmsg.payload.type = \"message\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 690,
+        "y": 940,
+        "wires": [
+            [
+                "232179cf.6d1e26"
+            ]
+        ]
+    },
+    {
+        "id": "232179cf.6d1e26",
+        "type": "join",
+        "z": "5dddf6dd.c8bf48",
+        "name": "",
+        "mode": "custom",
+        "build": "array",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": false,
+        "timeout": "",
+        "count": "2",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 1010,
+        "y": 940,
+        "wires": [
+            [
+                "64266d03.c47004"
+            ]
+        ]
+    },
+    {
+        "id": "87b54c6.e493db",
+        "type": "debug",
+        "z": "5dddf6dd.c8bf48",
+        "name": "NEO",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 1430,
+        "y": 940,
+        "wires": []
+    },
+    {
+        "id": "ffb50bbf.0ef1a8",
+        "type": "function",
+        "z": "5dddf6dd.c8bf48",
+        "name": "/comm",
+        "func": "var status= msg.payload.users[0].id;\nvar out = \"DOWN\";\nif (status == 2){\n    out = \"UP\";\n}\nelse{\n    out = \"DOWN\";\n}\nmsg.payload = {};\nmsg.payload = out;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 860,
+        "y": 980,
+        "wires": [
+            [
+                "232179cf.6d1e26"
+            ]
+        ]
+    },
+    {
+        "id": "64266d03.c47004",
+        "type": "function",
+        "z": "5dddf6dd.c8bf48",
+        "name": "/comm",
+        "func": "\nvar device = msg.originalMessage.from.first_name;\nif(device.length < 1)\n{\n     device = 'CyberWarrior '+chat;\n}\nvar df = msg.payload[0];\nvar message = \"Hi \"+device+\"! Community is \"+df;\nvar chat = msg.payload[1].chatId;\nvar type = msg.payload[1].type;\nnewMsg = {payload:{chatId:chat,type:type,content:message}};\nreturn newMsg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1200,
+        "y": 940,
+        "wires": [
+            [
+                "87b54c6.e493db",
+                "efa2548c.43d328"
+            ]
+        ]
+    },
+    {
+        "id": "deea13f8.e01968",
+        "type": "telegram command",
+        "z": "5dddf6dd.c8bf48",
+        "name": "",
+        "command": "/estado",
+        "bot": "ec276bbe.bcc1",
+        "strict": true,
+        "hasresponse": true,
+        "useregex": false,
+        "removeregexcommand": false,
+        "outputs": 2,
+        "x": 310,
+        "y": 1560,
+        "wires": [
+            [
+                "c88c55ea.ef4998"
+            ],
+            []
+        ]
     }
 ]
