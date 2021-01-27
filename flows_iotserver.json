@@ -1,22 +1,15 @@
 [
     {
-        "id": "bc4bb43.39904c8",
-        "type": "tab",
-        "label": "Flow 1",
-        "disabled": true,
-        "info": ""
-    },
-    {
         "id": "7fddfb51.6bbd1c",
         "type": "tab",
         "label": "Termostato",
-        "disabled": true,
+        "disabled": false,
         "info": ""
     },
     {
-        "id": "5dddf6dd.c8bf48",
+        "id": "accb50b6.fdff3",
         "type": "tab",
-        "label": "iotBot",
+        "label": "telegramBot",
         "disabled": false,
         "info": ""
     },
@@ -312,14 +305,14 @@
         "willPayload": ""
     },
     {
-        "id": "ec276bbe.bcc1",
+        "id": "dbf0369.508dcc8",
         "type": "telegram bot",
-        "botname": "casa_iot@iotjvr68_bot",
-        "usernames": "",
-        "chatids": "",
+        "botname": "myTelegramBot",
+        "usernames": "Jose_Ventura",
+        "chatids": "-1001237855715",
         "baseapiurl": "",
         "updatemode": "polling",
-        "pollinterval": "1000",
+        "pollinterval": "300",
         "usesocks": false,
         "sockshost": "",
         "socksport": "6667",
@@ -790,7 +783,7 @@
         "z": "7fddfb51.6bbd1c",
         "g": "bf665d9f.2572a8",
         "name": "Gestor Estado",
-        "func": "addHours = function(date,h) {\n  return new Date(date.getTime() + (h*60*60*1000));\n}\n\ndiffHours = function (dateFrom, dateTo){\n    diff = dateTo - dateFrom;\n    return Math.ceil(diff / (60*60*1000))\n}\n\n\nfunction resetToAutomatic (state){\n    state.mode = \"automatic\";\n    state.manual = null;\n}\n\nfunction resetToManual (state){\n    state.mode = \"manual\";\n    state.manual={\n        from: new Date(),\n        to:undefined\n    }\n    state.manual.to= addHours (state.manual.from,state.hourSlider);\n}\n\nvar state = flow.get (\"state\") || {away:true};\n\nswitch (msg.topic) {\n    case \"hourSlider\":\n        state.hourSlider = msg.payload;\n        if (state.hourSlider > 0){\n            resetToManual (state);\n        }else{\n            resetToAutomatic(state);\n        }\n        break;\n    case \"tempSlider\":\n        state.tempSlider = msg.payload;\n        break;\n    case \"targetTemp\":\n        state.targetTemp = msg.payload;\n        break;\n    case \"ambientTemp\":\n        state.ambientTemp = msg.payload;\n        break;\n    case \"away\":\n        state.away = !state.away\n        break;\n    default:\n       break;\n}\n\nif (state.mode == \"manual\"){\n    msg.topic = \"resetHourSlider\"\n    if (new Date() >= state.manual.to) {\n        msg.payload = 0;\n        resetToAutomatic(state)\n    } else {\n        msg.payload = state.hourSlider;\n        state.hourSlider = diffHours (new Date(), state.manual.to);\n        state.targetTemp = state.tempSlider;\n    }\n}\n\nif (state.away){\n    state.boilerFunction = \"stop\"\n} else {\n    var ranges = flow.get (\"rangosTemp\")|| [{rangeInfTemp:0,rangeSupTemp:0}];\n    ranges = ranges[0];\n    var tope = state.targetTemp;\n    if (state.boilerFunction == \"start\") {\n        tope = state.targetTemp + ranges.rangeSupTemp;\n        if (state.ambientTemp > tope){\n            state.boilerFunction = \"stop\"\n        }\n    }else{\n        tope = state.targetTemp - ranges.rangeInfTemp;\n        if (state.ambientTemp < tope){\n            state.boilerFunction = \"start\"\n        }\n    }\n    \n}\n\n/*\nif (!state.away && state.ambientTemp < state.targetTemp){\n    state.boilerFunction = \"start\"\n}else{\n    state.boilerFunction = \"stop\"\n}\n*/\n\nflow.set (\"state\",state)\nmsg.state = state\nreturn msg;",
+        "func": "addHours = function(date,h) {\n  return new Date(date.getTime() + (h*60*60*1000));\n}\n\ndiffHours = function (dateFrom, dateTo){\n    diff = dateTo - dateFrom;\n    return Math.ceil(diff / (60*60*1000))\n}\n\n\nfunction resetToAutomatic (state){\n    state.mode = \"automatic\";\n    state.manual = null;\n}\n\nfunction resetToManual (state){\n    state.mode = \"manual\";\n    state.manual={\n        from: new Date(),\n        to:undefined\n    }\n    state.manual.to= addHours (state.manual.from,state.hourSlider);\n}\n\nvar state = global.get (\"termostato\") || {away:true};\n\nswitch (msg.topic) {\n    case \"hourSlider\":\n        state.hourSlider = msg.payload;\n        if (state.hourSlider > 0){\n            resetToManual (state);\n        }else{\n            resetToAutomatic(state);\n        }\n        break;\n    case \"tempSlider\":\n        state.tempSlider = msg.payload;\n        break;\n    case \"targetTemp\":\n        state.targetTemp = msg.payload;\n        break;\n    case \"ambientTemp\":\n        state.ambientTemp = msg.payload;\n        break;\n    case \"away\":\n        state.away = !state.away\n        break;\n    default:\n       break;\n}\n\nif (state.mode == \"manual\"){\n    msg.topic = \"resetHourSlider\"\n    if (new Date() >= state.manual.to) {\n        msg.payload = 0;\n        resetToAutomatic(state)\n    } else {\n        msg.payload = state.hourSlider;\n        state.hourSlider = diffHours (new Date(), state.manual.to);\n        state.targetTemp = state.tempSlider;\n    }\n}\n\nif (state.away){\n    state.boilerFunction = \"stop\"\n} else {\n    var ranges = flow.get (\"rangosTemp\")|| [{rangeInfTemp:0,rangeSupTemp:0}];\n    ranges = ranges[0];\n    var tope = state.targetTemp;\n    if (state.boilerFunction == \"start\") {\n        tope = state.targetTemp + ranges.rangeSupTemp;\n        if (state.ambientTemp > tope){\n            state.boilerFunction = \"stop\"\n        }\n    }else{\n        tope = state.targetTemp - ranges.rangeInfTemp;\n        if (state.ambientTemp < tope){\n            state.boilerFunction = \"start\"\n        }\n    }\n    \n}\n\n/*\nif (!state.away && state.ambientTemp < state.targetTemp){\n    state.boilerFunction = \"start\"\n}else{\n    state.boilerFunction = \"stop\"\n}\n*/\nstate.timestamp = new Date();\nglobal.set (\"termostato\",state)\nmsg.state = state\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -1067,7 +1060,7 @@
         "z": "7fddfb51.6bbd1c",
         "g": "b72374e2.0018a",
         "name": "StateToPayload",
-        "func": "var state = flow.get (\"state\");\n\nmsg.payload = {\n    timestamp: msg.payload,\n    away : state.away, \n    targetTemp: state.targetTemp, \n    boilerFunction: state.boilerFunction, \n    mode: state.mode, \n    manualFrom: (state.manual==null)?null:state.manual.from, \n    manualTo: (state.manual==null)?null:state.manual.to, \n    hourSlider: state.hourSlider, \n    tempSlider: state.tempSlider,\n    ambientTemp: state.ambientTemp,\n    tempSensors: flow.get(\"tempSensors\")||{},\n    humSensors: flow.get(\"humSensors\")||{}\n}\n\nreturn msg;\n",
+        "func": "var state = global.get (\"termostato\");\n\nmsg.payload = {\n    timestamp: msg.payload,\n    away : state.away, \n    targetTemp: state.targetTemp, \n    boilerFunction: state.boilerFunction, \n    mode: state.mode, \n    manualFrom: (state.manual==null)?null:state.manual.from, \n    manualTo: (state.manual==null)?null:state.manual.to, \n    hourSlider: state.hourSlider, \n    tempSlider: state.tempSlider,\n    ambientTemp: state.ambientTemp,\n    tempSensors: flow.get(\"tempSensors\")||{},\n    humSensors: flow.get(\"humSensors\")||{}\n}\n\nreturn msg;\n",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -1498,175 +1491,11 @@
         "wires": []
     },
     {
-        "id": "366b81c3.11f506",
-        "type": "inject",
-        "z": "bc4bb43.39904c8",
-        "name": "",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "IOT_DATA",
-        "payloadType": "env",
-        "x": 220,
-        "y": 200,
-        "wires": [
-            [
-                "9dd7afdb.51f84"
-            ]
-        ]
-    },
-    {
-        "id": "9dd7afdb.51f84",
-        "type": "debug",
-        "z": "bc4bb43.39904c8",
-        "name": "",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 540,
-        "y": 220,
-        "wires": []
-    },
-    {
-        "id": "7cbc053.b83e37c",
-        "type": "function",
-        "z": "bc4bb43.39904c8",
-        "name": "",
-        "func": "msg.payload = env.get(\"IOT_DATA\")+\"/termostato\";\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "x": 480,
-        "y": 320,
-        "wires": [
-            [
-                "f67e1b7.882abe8"
-            ]
-        ]
-    },
-    {
-        "id": "17cb6947.9aee9f",
-        "type": "inject",
-        "z": "bc4bb43.39904c8",
-        "name": "",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 210,
-        "y": 360,
-        "wires": [
-            [
-                "7cbc053.b83e37c"
-            ]
-        ]
-    },
-    {
-        "id": "f67e1b7.882abe8",
-        "type": "debug",
-        "z": "bc4bb43.39904c8",
-        "name": "",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 660,
-        "y": 340,
-        "wires": []
-    },
-    {
-        "id": "7ba0e515.aadcac",
-        "type": "change",
-        "z": "bc4bb43.39904c8",
-        "name": "filename=diaPatron",
-        "rules": [
-            {
-                "t": "set",
-                "p": "payload",
-                "pt": "msg",
-                "to": "$env('IOT_DATA')+\"termo\"",
-                "tot": "jsonata"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 430,
-        "y": 400,
-        "wires": [
-            [
-                "f67e1b7.882abe8"
-            ]
-        ]
-    },
-    {
-        "id": "12dd1786.73814",
-        "type": "inject",
-        "z": "bc4bb43.39904c8",
-        "name": "",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 190,
-        "y": 540,
-        "wires": [
-            [
-                "7ba0e515.aadcac"
-            ]
-        ]
-    },
-    {
         "id": "cb92e165.1c15e",
         "type": "function",
         "z": "354011e5.cfbca6",
         "name": "patrones.csv",
-        "func": "msg.file = \"patrones.csv\";\nmsg.filename = env.get(\"IOT_DATA\")+\"/termostato/\"+msg.file;\n\nreturn msg;",
+        "func": "msg.file = \"patrones.csv\";\nmsg.filename = env.get(\"IOT_DATA\")+\"/termostato/conf/\"+msg.file;\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -1721,75 +1550,11 @@
         ]
     },
     {
-        "id": "daedd81.a942928",
-        "type": "function",
-        "z": "bc4bb43.39904c8",
-        "name": "",
-        "func": "msg.file = \"patrones.csv\";\nmsg.filename = env.get(\"IOT_DATA\")+\"/termostato/\"+msg.file;\n\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "x": 880,
-        "y": 520,
-        "wires": [
-            [
-                "5c5a649b.2de2c4"
-            ]
-        ]
-    },
-    {
-        "id": "aa35fa02.f89f08",
-        "type": "inject",
-        "z": "bc4bb43.39904c8",
-        "name": "",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 710,
-        "y": 520,
-        "wires": [
-            [
-                "daedd81.a942928"
-            ]
-        ]
-    },
-    {
-        "id": "5c5a649b.2de2c4",
-        "type": "debug",
-        "z": "bc4bb43.39904c8",
-        "name": "",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "filename",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 1120,
-        "y": 620,
-        "wires": []
-    },
-    {
         "id": "893c154e.e7f208",
         "type": "function",
         "z": "354011e5.cfbca6",
         "name": "diaPatron.csv",
-        "func": "msg.file = \"diaPatron.csv\";\nmsg.filename = env.get(\"IOT_DATA\")+\"/termostato/\"+msg.file;\n\nreturn msg;",
+        "func": "msg.file = \"diaPatron.csv\";\nmsg.filename = env.get(\"IOT_DATA\")+\"/termostato/conf/\"+msg.file;\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -1807,7 +1572,7 @@
         "type": "function",
         "z": "354011e5.cfbca6",
         "name": "rangosTemp.csv",
-        "func": "msg.file = \"rangosTemp.csv\";\nmsg.filename = env.get(\"IOT_DATA\")+\"/termostato/\"+msg.file;\n\nreturn msg;",
+        "func": "msg.file = \"rangosTemp.csv\";\nmsg.filename = env.get(\"IOT_DATA\")+\"/termostato/conf/\"+msg.file;\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -1868,950 +1633,6 @@
         "x": 930,
         "y": 160,
         "wires": []
-    },
-    {
-        "id": "286f517c.4abebe",
-        "type": "telegram receiver",
-        "z": "5dddf6dd.c8bf48",
-        "name": "BotIn",
-        "bot": "ec276bbe.bcc1",
-        "saveDataDir": "",
-        "filterCommands": false,
-        "x": 90,
-        "y": 480,
-        "wires": [
-            [
-                "f07f6740.183ee8",
-                "1ca83cab.1f7833"
-            ],
-            []
-        ]
-    },
-    {
-        "id": "f07f6740.183ee8",
-        "type": "switch",
-        "z": "5dddf6dd.c8bf48",
-        "name": "^/command$",
-        "property": "payload.content",
-        "propertyType": "msg",
-        "rules": [
-            {
-                "t": "regex",
-                "v": "^/start$",
-                "vt": "str",
-                "case": false
-            },
-            {
-                "t": "regex",
-                "v": "^/help",
-                "vt": "str",
-                "case": false
-            },
-            {
-                "t": "regex",
-                "v": "^/status",
-                "vt": "str",
-                "case": false
-            },
-            {
-                "t": "regex",
-                "v": "^/mqtt",
-                "vt": "str",
-                "case": false
-            },
-            {
-                "t": "regex",
-                "v": "^/ping",
-                "vt": "str",
-                "case": false
-            },
-            {
-                "t": "regex",
-                "v": "^/uptime$",
-                "vt": "str",
-                "case": false
-            },
-            {
-                "t": "regex",
-                "v": "^/forum$",
-                "vt": "str",
-                "case": false
-            },
-            {
-                "t": "regex",
-                "v": "^/lamp$",
-                "vt": "str",
-                "case": false
-            },
-            {
-                "t": "regex",
-                "v": "^/df$",
-                "vt": "str",
-                "case": false
-            },
-            {
-                "t": "regex",
-                "v": "^/sock$",
-                "vt": "str",
-                "case": false
-            },
-            {
-                "t": "regex",
-                "v": "^/comm$",
-                "vt": "str",
-                "case": false
-            },
-            {
-                "t": "regex",
-                "v": "^/triv",
-                "vt": "str",
-                "case": false
-            },
-            {
-                "t": "regex",
-                "v": "^/true",
-                "vt": "str",
-                "case": false
-            },
-            {
-                "t": "regex",
-                "v": "^/false",
-                "vt": "str",
-                "case": false
-            },
-            {
-                "t": "regex",
-                "v": "^/score",
-                "vt": "str",
-                "case": false
-            },
-            {
-                "t": "else"
-            }
-        ],
-        "checkall": "true",
-        "repair": false,
-        "outputs": 16,
-        "x": 330,
-        "y": 540,
-        "wires": [
-            [
-                "c65378ea.f44c98"
-            ],
-            [
-                "ffd267e2.166518"
-            ],
-            [
-                "ffb1c88c.bd1eb8"
-            ],
-            [
-                "463d9bcd.fea7d4"
-            ],
-            [
-                "ac0be385.20b0b"
-            ],
-            [
-                "d4a2df8f.6275f"
-            ],
-            [
-                "979886d9.293408"
-            ],
-            [
-                "e25de4b7.fa3e78"
-            ],
-            [
-                "a0f35539.c70d58"
-            ],
-            [
-                "eb1ad191.cafda"
-            ],
-            [
-                "59db21a4.9bc24",
-                "9db2259c.56b598"
-            ],
-            [
-                "b8c948f9.43a508",
-                "36555b84.b40e54"
-            ],
-            [
-                "fb781c0f.2869b",
-                "36555b84.b40e54"
-            ],
-            [
-                "fb781c0f.2869b",
-                "36555b84.b40e54"
-            ],
-            [
-                "b8687a86.931198",
-                "36555b84.b40e54"
-            ],
-            [
-                "c88c55ea.ef4998",
-                "8feb4259.fae1d"
-            ]
-        ]
-    },
-    {
-        "id": "5f4ddee7.c2a3b",
-        "type": "telegram sender",
-        "z": "5dddf6dd.c8bf48",
-        "name": "UNIXForumBot",
-        "bot": "ec276bbe.bcc1",
-        "haserroroutput": false,
-        "outputs": 1,
-        "x": 1900,
-        "y": 400,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "ffd267e2.166518",
-        "type": "function",
-        "z": "5dddf6dd.c8bf48",
-        "name": "^/help$",
-        "func": "\nvar chat = msg.payload.chatId;\nvar device = msg.originalMessage.from.first_name;\nif(device.length < 1)\n{\n     device = 'CyberWarrior '+chat;\n}\nmsg.payload = {};\nmsg.payload.chatId = chat;\nmsg.payload.type = \"message\";\nmsg.payload.content = \"Hi \"+device+\"\\n /help for this menu.\";\n//msg.payload.content += \"\\n /triv play computer trivia.\\n /score get trivia scores.\nmsg.payload.content += \"\\n /uptime for server uptime.\\n /forum for forum online info.\\n /lamp for apache & mysql info.\\n /df for root disk info.\\n /sock for discourse socket info.\"\nmsg.payload.content += \"\\n /comm ping community.\";\nmsg.payload.content += \"\\n /ping basic ping test.\";\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 690,
-        "y": 160,
-        "wires": [
-            [
-                "a1acd6f7.1077c8"
-            ]
-        ]
-    },
-    {
-        "id": "463d9bcd.fea7d4",
-        "type": "function",
-        "z": "5dddf6dd.c8bf48",
-        "name": "^/mqtt",
-        "func": "var chat = msg.payload.chatId;\nvar device = msg.originalMessage.from.first_name;\nif(device.length < 1)\n{\n     device = 'CyberWarrior '+chat;\n}\nmsg.payload = {};\nmsg.payload.chatId = chat;\nmsg.payload.type = \"message\";\nmsg.payload.content = \"Hi \"+device+\"! MQTT is not yet available.\";\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 680,
-        "y": 240,
-        "wires": [
-            [
-                "a1acd6f7.1077c8"
-            ]
-        ]
-    },
-    {
-        "id": "ffb1c88c.bd1eb8",
-        "type": "function",
-        "z": "5dddf6dd.c8bf48",
-        "name": "^/status",
-        "func": "var chat = msg.payload.chatId;\nvar device = msg.originalMessage.from.first_name;\nif(device.length < 1)\n{\n     device = 'CyberWarrior '+chat;\n}\nmsg.payload = {};\nmsg.payload.chatId = chat;\nmsg.payload.type = \"message\";\nmsg.payload.content = \"Hi \"+device+\"! UnixForumBot is alive!  Try /help for more functions.\";\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 690,
-        "y": 200,
-        "wires": [
-            [
-                "a1acd6f7.1077c8"
-            ]
-        ]
-    },
-    {
-        "id": "ac0be385.20b0b",
-        "type": "function",
-        "z": "5dddf6dd.c8bf48",
-        "name": "^/ping",
-        "func": "var chat = msg.payload.chatId;\nvar device = msg.originalMessage.from.first_name;\nif(device.length < 1)\n{\n     device = 'CyberWarrior '+chat;\n}\nmsg.payload = {};\nmsg.payload.chatId = chat;\nmsg.payload.type = \"message\";\nmsg.payload.content = \"Hi \"+device+\"! UNIX.com is UP\";\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 680,
-        "y": 280,
-        "wires": [
-            [
-                "a1acd6f7.1077c8"
-            ]
-        ]
-    },
-    {
-        "id": "c88c55ea.ef4998",
-        "type": "function",
-        "z": "5dddf6dd.c8bf48",
-        "name": "^/otherwise",
-        "func": "var chat = msg.payload.chatId;\nvar command = msg.payload.content;\nvar device = msg.originalMessage.from.first_name;\nif(device.length < 1)\n{\n     device = 'CyberWarrior '+chat;\n}\nmsg.payload = {};\nmsg.payload.chatId = chat;\nmsg.payload.type = \"message\";\nmsg.payload.content = \"Hi \"+device+\"! Sorry, I do not yet understand '\"+command+\"'. Try /help for more options.\";\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 720,
-        "y": 1560,
-        "wires": [
-            [
-                "9c541198.73922"
-            ]
-        ]
-    },
-    {
-        "id": "c65378ea.f44c98",
-        "type": "function",
-        "z": "5dddf6dd.c8bf48",
-        "name": "^/start$",
-        "func": "\nvar chat = msg.payload.chatId;\nvar device = msg.originalMessage.from.first_name;\nif(device.length < 1)\n{\n     device = 'CyberWarrior '+chat;\n}\n\nmsg.payload = {};\nmsg.payload.chatId = chat;\nmsg.payload.type = \"message\";\nmsg.payload.content = \"Hi \"+device+\"! Welecome to the UNIX Forum Bot.  Reply with /help for more information.\";\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 690,
-        "y": 120,
-        "wires": [
-            [
-                "a1acd6f7.1077c8"
-            ]
-        ]
-    },
-    {
-        "id": "d4a2df8f.6275f",
-        "type": "function",
-        "z": "5dddf6dd.c8bf48",
-        "name": "^/uptime",
-        "func": "var chat = msg.payload.chatId;\nmsg.payload = {};\nmsg.payload.chatId = chat;\nmsg.payload.type = \"message\";\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 690,
-        "y": 320,
-        "wires": [
-            [
-                "ae226783.328318"
-            ]
-        ]
-    },
-    {
-        "id": "ae226783.328318",
-        "type": "join",
-        "z": "5dddf6dd.c8bf48",
-        "name": "",
-        "mode": "custom",
-        "build": "array",
-        "property": "payload",
-        "propertyType": "msg",
-        "key": "topic",
-        "joiner": "\\n",
-        "joinerType": "str",
-        "accumulate": false,
-        "timeout": "",
-        "count": "3",
-        "reduceRight": false,
-        "reduceExp": "",
-        "reduceInit": "",
-        "reduceInitType": "",
-        "reduceFixup": "",
-        "x": 850,
-        "y": 360,
-        "wires": [
-            [
-                "ff4b6f9a.a2b59"
-            ]
-        ]
-    },
-    {
-        "id": "ff4b6f9a.a2b59",
-        "type": "function",
-        "z": "5dddf6dd.c8bf48",
-        "name": "/uptime",
-        "func": "\nvar message = msg.payload[1];\nvar chat = msg.payload[0].chatId;\nvar type = msg.payload[0].type;\nnewMsg = {payload:{chatId:chat,type:type,content:message}};\nreturn newMsg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 1030,
-        "y": 360,
-        "wires": [
-            [
-                "efa2548c.43d328"
-            ]
-        ]
-    },
-    {
-        "id": "979886d9.293408",
-        "type": "function",
-        "z": "5dddf6dd.c8bf48",
-        "name": "^/forum",
-        "func": "var chat = msg.payload.chatId;\ndevice = msg.originalMessage.from.first_name;\nmsg.payload = {};\nmsg.payload.chatId = chat;\nmsg.payload.type = \"message\";\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 690,
-        "y": 420,
-        "wires": [
-            [
-                "309e3f5b.958fc"
-            ]
-        ]
-    },
-    {
-        "id": "309e3f5b.958fc",
-        "type": "join",
-        "z": "5dddf6dd.c8bf48",
-        "name": "",
-        "mode": "custom",
-        "build": "array",
-        "property": "payload",
-        "propertyType": "msg",
-        "key": "topic",
-        "joiner": "\\n",
-        "joinerType": "str",
-        "accumulate": false,
-        "timeout": "",
-        "count": "3",
-        "reduceRight": false,
-        "reduceExp": "",
-        "reduceInit": "",
-        "reduceInitType": "",
-        "reduceFixup": "",
-        "x": 850,
-        "y": 420,
-        "wires": [
-            [
-                "5af25ffc.8e798"
-            ]
-        ]
-    },
-    {
-        "id": "5af25ffc.8e798",
-        "type": "function",
-        "z": "5dddf6dd.c8bf48",
-        "name": "/forum",
-        "func": "\nvar forum = msg.payload[1];\nvar p = forum.split(\":\");\nvar message = \"Members: \"+p[0]+\", Guests: \"+p[1]+ \", Bots: \"+p[2]+\", Total: \"+p[3];\nvar chat = msg.payload[0].chatId;\nvar type = msg.payload[0].type;\nnewMsg = {payload:{chatId:chat,type:type,content:message}};\nreturn newMsg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 1020,
-        "y": 420,
-        "wires": [
-            [
-                "efa2548c.43d328"
-            ]
-        ]
-    },
-    {
-        "id": "e25de4b7.fa3e78",
-        "type": "function",
-        "z": "5dddf6dd.c8bf48",
-        "name": "^/lamp",
-        "func": "var chat = msg.payload.chatId;\nmsg.payload = {};\nmsg.payload.chatId = chat;\nmsg.payload.type = \"message\";\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 680,
-        "y": 520,
-        "wires": [
-            [
-                "ce972bf7.99bf18"
-            ]
-        ]
-    },
-    {
-        "id": "ce972bf7.99bf18",
-        "type": "join",
-        "z": "5dddf6dd.c8bf48",
-        "name": "",
-        "mode": "custom",
-        "build": "array",
-        "property": "payload",
-        "propertyType": "msg",
-        "key": "topic",
-        "joiner": "\\n",
-        "joinerType": "str",
-        "accumulate": false,
-        "timeout": "",
-        "count": "5",
-        "reduceRight": false,
-        "reduceExp": "",
-        "reduceInit": "",
-        "reduceInitType": "",
-        "reduceFixup": "",
-        "x": 850,
-        "y": 560,
-        "wires": [
-            [
-                "5c361ce2.9d55c4"
-            ]
-        ]
-    },
-    {
-        "id": "5c361ce2.9d55c4",
-        "type": "function",
-        "z": "5dddf6dd.c8bf48",
-        "name": "/lamp",
-        "func": "\nvar cpus = msg.payload[1];\nvar apache = msg.payload[3];\nvar message = cpus+\", Apache Processes: \"+apache;\n//var p = forum.split(\":\");\n//var message = \"Members: \"+p[0]+\", Guests: \"+p[1]+ \", Bots: \"+p[2]+\", Total: \"+p[3];\nvar chat = msg.payload[0].chatId;\nvar type = msg.payload[0].type;\nnewMsg = {payload:{chatId:chat,type:type,content:message}};\nreturn newMsg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 1020,
-        "y": 560,
-        "wires": [
-            [
-                "efa2548c.43d328"
-            ]
-        ]
-    },
-    {
-        "id": "a0f35539.c70d58",
-        "type": "function",
-        "z": "5dddf6dd.c8bf48",
-        "name": "^/df",
-        "func": "var chat = msg.payload.chatId;\nmsg.payload = {};\nmsg.payload.chatId = chat;\nmsg.payload.type = \"message\";\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 670,
-        "y": 720,
-        "wires": [
-            [
-                "d35cc58.c1dae38"
-            ]
-        ]
-    },
-    {
-        "id": "d35cc58.c1dae38",
-        "type": "join",
-        "z": "5dddf6dd.c8bf48",
-        "name": "",
-        "mode": "custom",
-        "build": "array",
-        "property": "payload",
-        "propertyType": "msg",
-        "key": "topic",
-        "joiner": "\\n",
-        "joinerType": "str",
-        "accumulate": false,
-        "timeout": "",
-        "count": "3",
-        "reduceRight": false,
-        "reduceExp": "",
-        "reduceInit": "",
-        "reduceInitType": "",
-        "reduceFixup": "",
-        "x": 850,
-        "y": 720,
-        "wires": [
-            [
-                "7c495da3.a2daf4"
-            ]
-        ]
-    },
-    {
-        "id": "7c495da3.a2daf4",
-        "type": "function",
-        "z": "5dddf6dd.c8bf48",
-        "name": "/df",
-        "func": "\nvar df = msg.payload[1];\nvar p = df.split(/[ ]+/);\nvar message = p[0]+ \" is \"+ p[4] +\" full\";\nvar chat = msg.payload[0].chatId;\nvar type = msg.payload[0].type;\nnewMsg = {payload:{chatId:chat,type:type,content:message}};\nreturn newMsg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 1010,
-        "y": 720,
-        "wires": [
-            [
-                "efa2548c.43d328"
-            ]
-        ]
-    },
-    {
-        "id": "1ca83cab.1f7833",
-        "type": "function",
-        "z": "5dddf6dd.c8bf48",
-        "d": true,
-        "name": "To MySQL",
-        "func": "var mysql = global.get(\"mysql\");\nvar connection = mysql.createConnection({\n  host: \"localhost\",\n  user: \"root\",\n  port: \"/var/run/mysqld/mysqld.sock\",\n  password: \"PASSWORD\",\n  database: \"my_db\"\n});\nvar newMsg = {};\n\nif (msg.originalMessage.date) {\n  var unixtime = msg.originalMessage.date;\n} else {\n  unixtime = 9999;\n}\n\nif (msg.originalMessage.message_id) {\n  var messageid = msg.originalMessage.message_id;\n} else {\n  messageid = 9999;\n}\n\nif (msg.originalMessage.from.id) {\n  var chatid = msg.originalMessage.from.id;\n} else {\n  chatid = 9999;\n}\n\nif (msg.originalMessage.from.first_name) {\n  var first_name = msg.originalMessage.from.first_name;\n} else {\n  first_name = \"Unknown\";\n}\n\nif (msg.originalMessage.from.username) {\n  var username = msg.originalMessage.from.username;\n} else {\n  username = \"CyberWarrior \"+chatid;\n}\nif (msg.payload.content) {\n  var rawcontent = msg.payload.content;\n} else {\n  rawcontent = \"Unknown\";\n}\nif (msg.payload.type) {\n  var type = msg.payload.type;\n} else {\n  type  = \"Unknown\";\n}\nvar content = rawcontent.replace(/[^a-zA-Z0-9\\/ ]/g, \"*\");\n\nconnection.query(\n  \"INSERT INTO telegram_bot_receiver (dateline, chatid,messageid,type,content,first_name,username) VALUES ('\" +\n    unixtime +\n    \"','\" +\n    chatid +\n    \"','\" +\n    messageid +\n    \"','\" +\n    type +\n    \"','\" +\n    content +\n    \"','\" +\n    first_name +\n    \"','\" +\n    username +\n    \"')\",\n  function(err, results, fields) {\n    console.log(err);\n    console.log(results);\n    connection.end();\n  }\n);\n\nreturn msg;\n",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "x": 340,
-        "y": 200,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "ab6a8aeb.3e1918",
-        "type": "link in",
-        "z": "5dddf6dd.c8bf48",
-        "name": "NEW_QUESTION_TO_BOT_IN",
-        "links": [
-            "bb81140a.58bd28"
-        ],
-        "x": 1675,
-        "y": 1380,
-        "wires": [
-            [
-                "5f4ddee7.c2a3b"
-            ]
-        ]
-    },
-    {
-        "id": "fb781c0f.2869b",
-        "type": "link out",
-        "z": "5dddf6dd.c8bf48",
-        "name": "SWITCH_TRIVIA_TRUE_FALSE_OUT",
-        "links": [
-            "16fa46a1.f604c9"
-        ],
-        "x": 655,
-        "y": 1420,
-        "wires": []
-    },
-    {
-        "id": "b8c948f9.43a508",
-        "type": "link out",
-        "z": "5dddf6dd.c8bf48",
-        "name": "BOT_SWITCH_OUT",
-        "links": [
-            "39804338.ba3b9c"
-        ],
-        "x": 655,
-        "y": 1380,
-        "wires": []
-    },
-    {
-        "id": "694b6afa.99ca44",
-        "type": "link in",
-        "z": "5dddf6dd.c8bf48",
-        "name": "ANSWERED_T_F_TO_BOT_IN",
-        "links": [
-            "e7b292b3.6f1d7"
-        ],
-        "x": 1675,
-        "y": 1420,
-        "wires": [
-            [
-                "5f4ddee7.c2a3b"
-            ]
-        ]
-    },
-    {
-        "id": "b8687a86.931198",
-        "type": "link out",
-        "z": "5dddf6dd.c8bf48",
-        "name": "SWITCH_SCORE_OUT",
-        "links": [
-            "f20a0795.d9e3f8"
-        ],
-        "x": 655,
-        "y": 1460,
-        "wires": []
-    },
-    {
-        "id": "765f32b0.5b309c",
-        "type": "link in",
-        "z": "5dddf6dd.c8bf48",
-        "name": "TRIVIA_SCORE_IN",
-        "links": [
-            "890f5447.169798"
-        ],
-        "x": 1675,
-        "y": 1460,
-        "wires": [
-            [
-                "5f4ddee7.c2a3b"
-            ]
-        ]
-    },
-    {
-        "id": "36555b84.b40e54",
-        "type": "function",
-        "z": "5dddf6dd.c8bf48",
-        "name": "Trivia Disabled",
-        "func": "var chat = msg.payload.chatId;\nvar command = msg.payload.content;\nvar device = msg.originalMessage.from.first_name;\nif(device.length < 1)\n{\n     device = 'CyberWarrior '+chat;\n}\nmsg.payload = {};\nmsg.payload.chatId = chat;\nmsg.payload.type = \"message\";\nmsg.payload.content = \"Hi \"+device+\"! Sorry, trivia is temporarily disabled. Try /help for more options.\";\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 730,
-        "y": 1520,
-        "wires": [
-            [
-                "9c541198.73922"
-            ]
-        ]
-    },
-    {
-        "id": "eb1ad191.cafda",
-        "type": "function",
-        "z": "5dddf6dd.c8bf48",
-        "name": "^/sock",
-        "func": "var chat = msg.payload.chatId;\nmsg.payload = {};\nmsg.payload.chatId = chat;\nmsg.payload.type = \"message\";\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 680,
-        "y": 840,
-        "wires": [
-            [
-                "cd2814da.b08ad8"
-            ]
-        ]
-    },
-    {
-        "id": "cd2814da.b08ad8",
-        "type": "join",
-        "z": "5dddf6dd.c8bf48",
-        "name": "",
-        "mode": "custom",
-        "build": "array",
-        "property": "payload",
-        "propertyType": "msg",
-        "key": "topic",
-        "joiner": "\\n",
-        "joinerType": "str",
-        "accumulate": false,
-        "timeout": "",
-        "count": "3",
-        "reduceRight": false,
-        "reduceExp": "",
-        "reduceInit": "",
-        "reduceInitType": "",
-        "reduceFixup": "",
-        "x": 850,
-        "y": 820,
-        "wires": [
-            [
-                "c5ba99c7.4ae4a8",
-                "bf46b83b.8bf208"
-            ]
-        ]
-    },
-    {
-        "id": "c5ba99c7.4ae4a8",
-        "type": "function",
-        "z": "5dddf6dd.c8bf48",
-        "name": "/sock",
-        "func": "\nvar message = msg.payload[2];\nvar chat = msg.payload[1].chatId;\nvar type = msg.payload[1].type;\nnewMsg = {payload:{chatId:chat,type:type,content:message}};\nreturn newMsg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 1020,
-        "y": 820,
-        "wires": [
-            [
-                "efa2548c.43d328"
-            ]
-        ]
-    },
-    {
-        "id": "bf46b83b.8bf208",
-        "type": "debug",
-        "z": "5dddf6dd.c8bf48",
-        "name": "NEO",
-        "active": false,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "x": 1010,
-        "y": 880,
-        "wires": []
-    },
-    {
-        "id": "10b1eb31.a65725",
-        "type": "link in",
-        "z": "5dddf6dd.c8bf48",
-        "name": "Telegram In",
-        "links": [
-            "a1acd6f7.1077c8"
-        ],
-        "x": 1555,
-        "y": 200,
-        "wires": [
-            [
-                "5f4ddee7.c2a3b"
-            ]
-        ]
-    },
-    {
-        "id": "a1acd6f7.1077c8",
-        "type": "link out",
-        "z": "5dddf6dd.c8bf48",
-        "name": "To Telegram",
-        "links": [
-            "10b1eb31.a65725"
-        ],
-        "x": 1035,
-        "y": 200,
-        "wires": []
-    },
-    {
-        "id": "b1601afc.710bd8",
-        "type": "link in",
-        "z": "5dddf6dd.c8bf48",
-        "name": "Otherwise In",
-        "links": [
-            "9c541198.73922"
-        ],
-        "x": 1675,
-        "y": 1520,
-        "wires": [
-            [
-                "5f4ddee7.c2a3b"
-            ]
-        ]
-    },
-    {
-        "id": "9c541198.73922",
-        "type": "link out",
-        "z": "5dddf6dd.c8bf48",
-        "name": "Otherwise Out",
-        "links": [
-            "b1601afc.710bd8"
-        ],
-        "x": 1015,
-        "y": 1520,
-        "wires": []
-    },
-    {
-        "id": "efa2548c.43d328",
-        "type": "link out",
-        "z": "5dddf6dd.c8bf48",
-        "name": "Telegram Out 2",
-        "links": [
-            "7d708d65.260ec4"
-        ],
-        "x": 1415,
-        "y": 500,
-        "wires": []
-    },
-    {
-        "id": "7d708d65.260ec4",
-        "type": "link in",
-        "z": "5dddf6dd.c8bf48",
-        "name": "Telegram In 2",
-        "links": [
-            "efa2548c.43d328"
-        ],
-        "x": 1595,
-        "y": 500,
-        "wires": [
-            [
-                "5f4ddee7.c2a3b"
-            ]
-        ]
-    },
-    {
-        "id": "9db2259c.56b598",
-        "type": "http request",
-        "z": "5dddf6dd.c8bf48",
-        "name": "/comm",
-        "method": "GET",
-        "ret": "obj",
-        "paytoqs": false,
-        "url": "https://community.unix.com/c/125.json",
-        "tls": "",
-        "persist": false,
-        "proxy": "",
-        "authType": "",
-        "x": 680,
-        "y": 980,
-        "wires": [
-            [
-                "ffb50bbf.0ef1a8"
-            ]
-        ]
-    },
-    {
-        "id": "59db21a4.9bc24",
-        "type": "function",
-        "z": "5dddf6dd.c8bf48",
-        "name": "^/comm",
-        "func": "var chat = msg.payload.chatId;\nmsg.payload = {};\nmsg.payload.chatId = chat;\nmsg.payload.type = \"message\";\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 690,
-        "y": 940,
-        "wires": [
-            [
-                "232179cf.6d1e26"
-            ]
-        ]
-    },
-    {
-        "id": "232179cf.6d1e26",
-        "type": "join",
-        "z": "5dddf6dd.c8bf48",
-        "name": "",
-        "mode": "custom",
-        "build": "array",
-        "property": "payload",
-        "propertyType": "msg",
-        "key": "topic",
-        "joiner": "\\n",
-        "joinerType": "str",
-        "accumulate": false,
-        "timeout": "",
-        "count": "2",
-        "reduceRight": false,
-        "reduceExp": "",
-        "reduceInit": "",
-        "reduceInitType": "",
-        "reduceFixup": "",
-        "x": 1010,
-        "y": 940,
-        "wires": [
-            [
-                "64266d03.c47004"
-            ]
-        ]
-    },
-    {
-        "id": "87b54c6.e493db",
-        "type": "debug",
-        "z": "5dddf6dd.c8bf48",
-        "name": "NEO",
-        "active": false,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "x": 1430,
-        "y": 940,
-        "wires": []
-    },
-    {
-        "id": "ffb50bbf.0ef1a8",
-        "type": "function",
-        "z": "5dddf6dd.c8bf48",
-        "name": "/comm",
-        "func": "var status= msg.payload.users[0].id;\nvar out = \"DOWN\";\nif (status == 2){\n    out = \"UP\";\n}\nelse{\n    out = \"DOWN\";\n}\nmsg.payload = {};\nmsg.payload = out;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 860,
-        "y": 980,
-        "wires": [
-            [
-                "232179cf.6d1e26"
-            ]
-        ]
-    },
-    {
-        "id": "64266d03.c47004",
-        "type": "function",
-        "z": "5dddf6dd.c8bf48",
-        "name": "/comm",
-        "func": "\nvar device = msg.originalMessage.from.first_name;\nif(device.length < 1)\n{\n     device = 'CyberWarrior '+chat;\n}\nvar df = msg.payload[0];\nvar message = \"Hi \"+device+\"! Community is \"+df;\nvar chat = msg.payload[1].chatId;\nvar type = msg.payload[1].type;\nnewMsg = {payload:{chatId:chat,type:type,content:message}};\nreturn newMsg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 1200,
-        "y": 940,
-        "wires": [
-            [
-                "87b54c6.e493db",
-                "efa2548c.43d328"
-            ]
-        ]
-    },
-    {
-        "id": "deea13f8.e01968",
-        "type": "telegram command",
-        "z": "5dddf6dd.c8bf48",
-        "name": "",
-        "command": "/estado@iotjvr68_bot",
-        "bot": "ec276bbe.bcc1",
-        "strict": true,
-        "hasresponse": true,
-        "useregex": false,
-        "removeregexcommand": false,
-        "outputs": 2,
-        "x": 360,
-        "y": 1560,
-        "wires": [
-            [
-                "c88c55ea.ef4998",
-                "2da3810c.610fee"
-            ],
-            []
-        ]
     },
     {
         "id": "c631046e.8ca3c8",
@@ -2953,25 +1774,335 @@
         ]
     },
     {
-        "id": "2da3810c.610fee",
-        "type": "debug",
-        "z": "5dddf6dd.c8bf48",
+        "id": "5a0551ff.d8fc28",
+        "type": "telegram event",
+        "z": "accb50b6.fdff3",
         "name": "",
+        "bot": "dbf0369.508dcc8",
+        "event": "callback_query",
+        "autoanswer": true,
+        "x": 120,
+        "y": 660,
+        "wires": [
+            [
+                "4c68f71b.1a2e68",
+                "4410fef2.65799"
+            ]
+        ]
+    },
+    {
+        "id": "3d29ea20.b65ca6",
+        "type": "telegram sender",
+        "z": "accb50b6.fdff3",
+        "name": "show inline keyboard",
+        "bot": "dbf0369.508dcc8",
+        "haserroroutput": false,
+        "outputs": 1,
+        "x": 620,
+        "y": 240,
+        "wires": [
+            [
+                "42aa266f.97c498"
+            ]
+        ]
+    },
+    {
+        "id": "e40d1203.8693f8",
+        "type": "function",
+        "z": "accb50b6.fdff3",
+        "name": "Qué enceder?",
+        "func": "// context.global.keyboard = { pending : true, messageId : msg.payload.messageId };\n\nvar onOffElements = flow.get(\"onOffElements\");\nvar buttons = [[]];\nonOffElements.forEach (function (value, index, array){\n    buttons[0].push({\n        text:value.name,\n        callback_data: value.name+\"|on\"\n    })\n})\n\nvar opts = {\n reply_to_message_id: msg.payload.messageId,\n reply_markup: JSON.stringify({\n \"inline_keyboard\": buttons\n })\n};\n\nmsg.payload.type = \"message\";\nmsg.payload.content = 'Pulsa el aparato a encender';\nmsg.payload.options = opts;\nflow.set(\"chatId\",msg.payload.chatId)\nreturn [ msg ];\n",
+        "outputs": "1",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 340,
+        "y": 240,
+        "wires": [
+            [
+                "3d29ea20.b65ca6"
+            ]
+        ]
+    },
+    {
+        "id": "987c8fb4.be7e1",
+        "type": "telegram command",
+        "z": "accb50b6.fdff3",
+        "name": "/encender",
+        "command": "/encender.*",
+        "bot": "dbf0369.508dcc8",
+        "strict": false,
+        "hasresponse": false,
+        "useregex": true,
+        "removeregexcommand": false,
+        "outputs": 1,
+        "x": 100,
+        "y": 240,
+        "wires": [
+            [
+                "e40d1203.8693f8"
+            ]
+        ]
+    },
+    {
+        "id": "4c68f71b.1a2e68",
+        "type": "debug",
+        "z": "accb50b6.fdff3",
+        "name": "callback",
         "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
-        "complete": "false",
+        "complete": "payload",
+        "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 460,
-        "y": 1480,
+        "x": 360,
+        "y": 740,
         "wires": []
     },
     {
-        "id": "8feb4259.fae1d",
+        "id": "9690260f.34a498",
+        "type": "function",
+        "z": "accb50b6.fdff3",
+        "name": "/estado",
+        "func": "var termostato = global.get(\"termostato\");\nvar caldera = (termostato.boilerFunction ===\"stop\")?\"apagada\":\"encendida\";\nvar termost = (termostato.away)?\"apagado\":\"encendido\";\nif (msg.payload.messageId === \"undefined\"){\n    msg.payload.options = {\n    parse_mode: \"markdown\"\n    };\n}else{\n    msg.payload.options = {\n        reply_to_message_id: msg.payload.messageId,\n        parse_mode: \"markdown\"\n    };\n}\nmsg.payload.type = \"message\";\nmsg.payload.chatId = flow.get(\"chatId\")\nmsg.payload.content = \"*TERMOSTATO*\\n\"+\n                    \"Termostato *\"+termost+\"*\\n\"+\n                    \"Ambiente a *\"+termostato.ambientTemp+\"º*\\n\"+\n                    \"Programado a *\"+termostato.targetTemp+\"º*\\n\"+\n                    \"Caldera *\"+caldera+\"*\"\n\nreturn [ msg ];",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 320,
+        "y": 420,
+        "wires": [
+            [
+                "ce542507.16ba28"
+            ]
+        ]
+    },
+    {
+        "id": "8ccc7120.08032",
+        "type": "inject",
+        "z": "accb50b6.fdff3",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 120,
+        "y": 160,
+        "wires": [
+            [
+                "8f05566e.43dbb8"
+            ]
+        ]
+    },
+    {
+        "id": "8f05566e.43dbb8",
+        "type": "function",
+        "z": "accb50b6.fdff3",
+        "name": "initOnOffElements",
+        "func": "var onOffElements=[{name:\"Termostato\"},{name:\"Otro\"}]\nflow.set (\"onOffElements\",onOffElements)\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 390,
+        "y": 160,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4410fef2.65799",
+        "type": "function",
+        "z": "accb50b6.fdff3",
+        "name": "get action",
+        "func": "var data = msg.payload.content.split(\"|\");\n\nmsg.action = {\n    element: data[0],\n    op: data[1]\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 340,
+        "y": 660,
+        "wires": [
+            [
+                "8ab424e8.384c48",
+                "6507293c.0ce168"
+            ]
+        ]
+    },
+    {
+        "id": "8ab424e8.384c48",
+        "type": "switch",
+        "z": "accb50b6.fdff3",
+        "name": "",
+        "property": "action.element",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "Termostato",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 530,
+        "y": 660,
+        "wires": [
+            [
+                "9f4d27c9.6910f8"
+            ],
+            [
+                "48c158af.89d5f8"
+            ]
+        ]
+    },
+    {
+        "id": "9f4d27c9.6910f8",
+        "type": "function",
+        "z": "accb50b6.fdff3",
+        "name": "Termostato",
+        "func": "var on = msg.action.op == \"on\";\nvar termostato = global.get(\"termostato\");\nvar textTermostato = (on)?\"encendido\":\"apagado\";\n\nif (termostato.away!=on){\n    msg.payload.content = \"El termostato ya estaba \"+textTermostato+\". \"\n}else{\n    termostato.away = !on;\n    global.set(\"termostato\",termostato);\n    msg.payload.content = \"Se ha \"+textTermostato+\" el termostato. \";\n    if (on){\n        msg.payload.content += \"Se iniciará la programación automática. \"\n    }\n                          \"Se iniciará la programación automática. \"\n}\n\nmsg.payload.content += \"Puede consultar el estado con '/estado'\";\nmsg.payload.options = {reply_to_message_id: msg.payload.messageId};\nmsg.payload.chatId = flow.get(\"chatId\")\nmsg.payload.type=\"message\";\nnode.status({\n    fill:(on)?\"green\":\"gray\",\n    shape:\"dot\"\n})\nreturn [msg];\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 710,
+        "y": 620,
+        "wires": [
+            [
+                "727047c9.bdb2f8"
+            ]
+        ]
+    },
+    {
+        "id": "1640f1a4.582c0e",
+        "type": "telegram command",
+        "z": "accb50b6.fdff3",
+        "name": "/estado",
+        "command": "/estado.*",
+        "bot": "dbf0369.508dcc8",
+        "strict": false,
+        "hasresponse": false,
+        "useregex": true,
+        "removeregexcommand": false,
+        "outputs": 1,
+        "x": 90,
+        "y": 420,
+        "wires": [
+            [
+                "9690260f.34a498",
+                "a634d698.a1f888"
+            ]
+        ]
+    },
+    {
+        "id": "ce542507.16ba28",
+        "type": "telegram sender",
+        "z": "accb50b6.fdff3",
+        "name": "show estado",
+        "bot": "dbf0369.508dcc8",
+        "haserroroutput": false,
+        "outputs": 1,
+        "x": 590,
+        "y": 420,
+        "wires": [
+            [
+                "9f4250f1.5681f"
+            ]
+        ]
+    },
+    {
+        "id": "727047c9.bdb2f8",
+        "type": "telegram sender",
+        "z": "accb50b6.fdff3",
+        "name": "show action resp",
+        "bot": "dbf0369.508dcc8",
+        "haserroroutput": false,
+        "outputs": 1,
+        "x": 930,
+        "y": 620,
+        "wires": [
+            [
+                "1a97c49c.e62f9b"
+            ]
+        ]
+    },
+    {
+        "id": "7544cdee.5dc0d4",
+        "type": "telegram sender",
+        "z": "accb50b6.fdff3",
+        "name": "show inline keyboard",
+        "bot": "dbf0369.508dcc8",
+        "haserroroutput": false,
+        "outputs": 1,
+        "x": 620,
+        "y": 320,
+        "wires": [
+            [
+                "1bb95f59.acb131"
+            ]
+        ]
+    },
+    {
+        "id": "328a0e1.95367f2",
+        "type": "function",
+        "z": "accb50b6.fdff3",
+        "name": "Qué apagar?",
+        "func": "// context.global.keyboard = { pending : true, messageId : msg.payload.messageId };\n\nvar onOffElements = flow.get(\"onOffElements\");\nvar buttons = [[]];\nonOffElements.forEach (function (value, index, array){\n    buttons[0].push({\n        text:value.name,\n        callback_data: value.name+\"|off\"\n    })\n})\n\nvar opts = {\n reply_to_message_id: msg.payload.messageId,\n reply_markup: JSON.stringify({\n \"inline_keyboard\": buttons\n })\n};\nmsg.payload.type = \"message\";\nmsg.payload.content = 'Pulsa el aparato a apagar';\nmsg.payload.options = opts;\nflow.set(\"chatId\",msg.payload.chatId)\nreturn [ msg ];\n",
+        "outputs": "1",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 330,
+        "y": 320,
+        "wires": [
+            [
+                "7544cdee.5dc0d4"
+            ]
+        ]
+    },
+    {
+        "id": "b0ec618d.4f83",
+        "type": "telegram command",
+        "z": "accb50b6.fdff3",
+        "name": "/apagar",
+        "command": "/apagar.*",
+        "bot": "dbf0369.508dcc8",
+        "strict": false,
+        "hasresponse": false,
+        "useregex": true,
+        "removeregexcommand": false,
+        "outputs": 1,
+        "x": 90,
+        "y": 320,
+        "wires": [
+            [
+                "328a0e1.95367f2"
+            ]
+        ]
+    },
+    {
+        "id": "42aa266f.97c498",
         "type": "debug",
-        "z": "5dddf6dd.c8bf48",
+        "z": "accb50b6.fdff3",
         "name": "",
         "active": true,
         "tosidebar": true,
@@ -2980,8 +2111,136 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 380,
-        "y": 820,
+        "x": 930,
+        "y": 240,
         "wires": []
+    },
+    {
+        "id": "1bb95f59.acb131",
+        "type": "debug",
+        "z": "accb50b6.fdff3",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 930,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "1a97c49c.e62f9b",
+        "type": "debug",
+        "z": "accb50b6.fdff3",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1150,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "9f4250f1.5681f",
+        "type": "debug",
+        "z": "accb50b6.fdff3",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 930,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "a634d698.a1f888",
+        "type": "debug",
+        "z": "accb50b6.fdff3",
+        "name": "recibido",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 320,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "6507293c.0ce168",
+        "type": "debug",
+        "z": "accb50b6.fdff3",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "action",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 490,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "48c158af.89d5f8",
+        "type": "debug",
+        "z": "accb50b6.fdff3",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "action",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 710,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "a9a29940.434d88",
+        "type": "inject",
+        "z": "accb50b6.fdff3",
+        "name": "",
+        "props": [
+            {
+                "p": "payload.chatId",
+                "v": "chatId",
+                "vt": "flow"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 100,
+        "y": 540,
+        "wires": [
+            [
+                "9690260f.34a498"
+            ]
+        ]
     }
 ]
