@@ -286,7 +286,7 @@
     {
         "id": "bf95716a.6309c8",
         "type": "mqtt-broker",
-        "name": "broker",
+        "name": "mqtt_broker",
         "broker": "localhost",
         "port": "1883",
         "clientid": "",
