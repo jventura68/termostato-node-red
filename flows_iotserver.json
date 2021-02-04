@@ -14,6 +14,13 @@
         "info": ""
     },
     {
+        "id": "1edb1dee.e38222",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": true,
+        "info": ""
+    },
+    {
         "id": "354011e5.cfbca6",
         "type": "subflow",
         "name": "confTermostato",
@@ -289,6 +296,7 @@
         "name": "mqtt_broker",
         "broker": "localhost",
         "port": "1883",
+        "tls": "35192e46.dbcc92",
         "clientid": "",
         "usetls": false,
         "compatmode": false,
@@ -326,7 +334,42 @@
         "certificate": "",
         "useselfsignedcertificate": false,
         "sslterminated": false,
-        "verboselogging": false
+        "verboselogging": true
+    },
+    {
+        "id": "35192e46.dbcc92",
+        "type": "tls-config",
+        "name": "",
+        "cert": "/home/pi/certCa/nodered_server.crt",
+        "key": "/home/pi/certCa/nodered_server.key",
+        "ca": "/home/pi/certCa/ca.crt",
+        "certname": "",
+        "keyname": "",
+        "caname": "",
+        "servername": "iotserver",
+        "verifyservercert": false
+    },
+    {
+        "id": "223afa3.14a1f06",
+        "type": "mqtt-broker",
+        "name": "mqtts_broker",
+        "broker": "localhost",
+        "port": "8883",
+        "tls": "35192e46.dbcc92",
+        "clientid": "",
+        "usetls": true,
+        "compatmode": false,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": ""
     },
     {
         "id": "b4a733ba.a1dc3",
@@ -500,7 +543,7 @@
         "topic": "/home/+/+/temperature",
         "qos": "0",
         "datatype": "auto",
-        "broker": "bf95716a.6309c8",
+        "broker": "223afa3.14a1f06",
         "x": 160,
         "y": 80,
         "wires": [
@@ -545,7 +588,7 @@
         "topic": "cmnd/home/caldera/POWER",
         "qos": "",
         "retain": "",
-        "broker": "bf95716a.6309c8",
+        "broker": "223afa3.14a1f06",
         "x": 1260,
         "y": 680,
         "wires": []
@@ -556,7 +599,7 @@
         "z": "7fddfb51.6bbd1c",
         "g": "bf665d9f.2572a8",
         "name": "Control Caldera",
-        "func": "var newMsg = {payload:\"off\"};\n\nif (!msg.state.away && msg.state.boilerFunction == \"start\"){\n    newMsg.payload = \"on\"\n}\n\nreturn newMsg;",
+        "func": "var newMsg = {payload:\"off\"};\n\nif (!msg.state.away && msg.state.boilerFunction == \"start\"){\n    newMsg.payload = \"on\"\n}\nnode.status ({\n    fill: (newMsg.payload==\"on\")?\"green\":\"gray\",\n    shape:\"dot\",\n    text: \"caldera \"+newMsg.payload\n})\nreturn newMsg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -575,7 +618,7 @@
         "type": "function",
         "z": "7fddfb51.6bbd1c",
         "name": "Update the 'TempAmbient'",
-        "func": "var antTemp = flow.get (\"antAmbientTemp\");\n\nparts = msg.topic.split (\"/\");\n//ejemplo: /home/salong/01/temperature\nsensors = flow.get (\"tempSensors\")||{};\nsensorId = parts[2]+\"_\"+parts[3];\nsensors[sensorId]=parseFloat(msg.payload);\nflow.set (\"tempSensors\",sensors)\n\nconst temps = Object.values(sensors);\n\nconst sum = temps.reduce(function (accumulator, currentValue){\n  return accumulator + currentValue;\n}, 0);\n\nconst average = sum / temps.length;\n\nif (average != antTemp){\n    msg.topic = \"ambientTemp\";\n    msg.payload = average;\n    flow.set(\"antAmbientTemp\",average);\n    return msg;    \n}\n",
+        "func": "var antTemp = flow.get (\"antAmbientTemp\");\n\nparts = msg.topic.split (\"/\");\n//ejemplo: /home/salong/01/temperature\nsensors = flow.get (\"tempSensors\")||{};\nsensorId = parts[2]+\"_\"+parts[3];\nsensors[sensorId]=parseFloat(msg.payload);\nflow.set (\"tempSensors\",sensors)\n\nconst temps = Object.values(sensors);\n\nconst sum = temps.reduce(function (accumulator, currentValue){\n  return accumulator + currentValue;\n}, 0);\n\nconst average = sum / temps.length;\nnode.status ({text:average})\nif (average != antTemp){\n    msg.topic = \"ambientTemp\";\n    msg.payload = average;\n    flow.set(\"antAmbientTemp\",average);\n    return msg;    \n}\n",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -646,7 +689,7 @@
         "z": "7fddfb51.6bbd1c",
         "g": "bf665d9f.2572a8",
         "name": "Preset TargetTemperature",
-        "func": "var today = flow.get(\"today\");\n//Elige el tramo horario activo\nvar current = 0;\ntoday.intervals.forEach(function (item, index, array){\n    if (msg.ts>item.hora){\n        current = index;\n    }\n})\n\nmsg.topic = \"targetTemp\"\nmsg.payload=today.intervals[current].temp\n\nreturn msg;",
+        "func": "var today = flow.get(\"today\");\n//Elige el tramo horario activo\nvar current = 0;\ntoday.intervals.forEach(function (item, index, array){\n    if (msg.ts>item.hora){\n        current = index;\n    }\n})\n\nmsg.topic = \"targetTemp\"\nmsg.payload=today.intervals[current].temp\nnode.status ({text:msg.payload})\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -665,7 +708,7 @@
         "type": "debug",
         "z": "7fddfb51.6bbd1c",
         "name": "Temperatura Sensor",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -731,7 +774,7 @@
         "topic": "stat/home/caldera/#",
         "qos": "2",
         "datatype": "auto",
-        "broker": "bf95716a.6309c8",
+        "broker": "223afa3.14a1f06",
         "x": 130,
         "y": 260,
         "wires": [
@@ -783,7 +826,7 @@
         "z": "7fddfb51.6bbd1c",
         "g": "bf665d9f.2572a8",
         "name": "Gestor Estado",
-        "func": "addHours = function(date,h) {\n  return new Date(date.getTime() + (h*60*60*1000));\n}\n\ndiffHours = function (dateFrom, dateTo){\n    diff = dateTo - dateFrom;\n    return Math.ceil(diff / (60*60*1000))\n}\n\n\nfunction resetToAutomatic (state){\n    state.mode = \"automatic\";\n    state.manual = null;\n}\n\nfunction resetToManual (state){\n    state.mode = \"manual\";\n    state.manual={\n        from: new Date(),\n        to:undefined\n    }\n    state.manual.to= addHours (state.manual.from,state.hourSlider);\n}\n\nvar state = global.get (\"termostato\") || {away:true};\n\nswitch (msg.topic) {\n    case \"hourSlider\":\n        state.hourSlider = msg.payload;\n        if (state.hourSlider > 0){\n            resetToManual (state);\n        }else{\n            resetToAutomatic(state);\n        }\n        break;\n    case \"tempSlider\":\n        state.tempSlider = msg.payload;\n        break;\n    case \"targetTemp\":\n        state.targetTemp = msg.payload;\n        break;\n    case \"ambientTemp\":\n        state.ambientTemp = msg.payload;\n        break;\n    case \"away\":\n        state.away = !state.away\n        break;\n    default:\n       break;\n}\n\nif (state.mode == \"manual\"){\n    msg.topic = \"resetHourSlider\"\n    if (new Date() >= state.manual.to) {\n        msg.payload = 0;\n        resetToAutomatic(state)\n    } else {\n        msg.payload = state.hourSlider;\n        state.hourSlider = diffHours (new Date(), state.manual.to);\n        state.targetTemp = state.tempSlider;\n    }\n}\n\nif (state.away){\n    state.boilerFunction = \"stop\"\n} else {\n    var ranges = flow.get (\"rangosTemp\")|| [{rangeInfTemp:0,rangeSupTemp:0}];\n    ranges = ranges[0];\n    var tope = state.targetTemp;\n    if (state.boilerFunction == \"start\") {\n        tope = state.targetTemp + ranges.rangeSupTemp;\n        if (state.ambientTemp > tope){\n            state.boilerFunction = \"stop\"\n        }\n    }else{\n        tope = state.targetTemp - ranges.rangeInfTemp;\n        if (state.ambientTemp < tope){\n            state.boilerFunction = \"start\"\n        }\n    }\n    \n}\n\n/*\nif (!state.away && state.ambientTemp < state.targetTemp){\n    state.boilerFunction = \"start\"\n}else{\n    state.boilerFunction = \"stop\"\n}\n*/\nstate.timestamp = new Date();\nglobal.set (\"termostato\",state)\nmsg.state = state\nreturn msg;",
+        "func": "addHours = function(date,h) {\n  return new Date(date.getTime() + (h*60*60*1000));\n}\n\ndiffHours = function (dateFrom, dateTo){\n    diff = dateTo - dateFrom;\n    return Math.ceil(diff / (60*60*1000))\n}\n\n\nfunction resetToAutomatic (state){\n    state.mode = \"automatic\";\n    state.manual = null;\n}\n\nfunction resetToManual (state){\n    state.mode = \"manual\";\n    state.manual={\n        from: new Date(),\n        to:undefined\n    }\n    state.manual.to= addHours (state.manual.from,state.hourSlider);\n}\n\nvar state = global.get (\"termostato\") || {away:false};\n\nswitch (msg.topic) {\n    case \"hourSlider\":\n        state.hourSlider = msg.payload;\n        if (state.hourSlider > 0){\n            resetToManual (state);\n        }else{\n            resetToAutomatic(state);\n        }\n        break;\n    case \"tempSlider\":\n        state.tempSlider = msg.payload;\n        break;\n    case \"targetTemp\":\n        state.targetTemp = msg.payload;\n        break;\n    case \"ambientTemp\":\n        state.ambientTemp = msg.payload;\n        break;\n    case \"away\":\n        state.away = !state.away\n        break;\n    default:\n       break;\n}\n\nif (state.mode == \"manual\"){\n    msg.topic = \"resetHourSlider\"\n    if (new Date() >= state.manual.to) {\n        msg.payload = 0;\n        resetToAutomatic(state)\n    } else {\n        msg.payload = state.hourSlider;\n        state.hourSlider = diffHours (new Date(), state.manual.to);\n        state.targetTemp = state.tempSlider;\n    }\n}\n\nif (state.away){\n    state.boilerFunction = \"stop\"\n} else {\n    var ranges = flow.get (\"rangosTemp\")|| [{rangeInfTemp:0,rangeSupTemp:0}];\n    ranges = ranges[0];\n    var tope = state.targetTemp;\n    if (state.boilerFunction == \"start\") {\n        tope = state.targetTemp + ranges.rangeSupTemp;\n        if (state.ambientTemp > tope){\n            state.boilerFunction = \"stop\"\n        }\n    }else{\n        tope = state.targetTemp - ranges.rangeInfTemp;\n        if (state.ambientTemp < tope){\n            state.boilerFunction = \"start\"\n        }\n    }\n    \n}\n\n/*\nif (!state.away && state.ambientTemp < state.targetTemp){\n    state.boilerFunction = \"start\"\n}else{\n    state.boilerFunction = \"stop\"\n}\n*/\nstate.timestamp = new Date();\nglobal.set (\"termostato\",state)\nmsg.state = state\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -905,7 +948,7 @@
         "z": "7fddfb51.6bbd1c",
         "g": "bf665d9f.2572a8",
         "name": "state",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -1194,7 +1237,7 @@
         "type": "debug",
         "z": "7fddfb51.6bbd1c",
         "name": "RespSonoff",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -1214,7 +1257,7 @@
         "topic": "/home/+/+/humidity",
         "qos": "2",
         "datatype": "auto",
-        "broker": "bf95716a.6309c8",
+        "broker": "223afa3.14a1f06",
         "x": 130,
         "y": 180,
         "wires": [
@@ -1318,7 +1361,7 @@
         "z": "7fddfb51.6bbd1c",
         "g": "b72374e2.0018a",
         "name": "escribeSiDistinto",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -1811,7 +1854,7 @@
         "type": "function",
         "z": "accb50b6.fdff3",
         "name": "Qué enceder?",
-        "func": "// context.global.keyboard = { pending : true, messageId : msg.payload.messageId };\n\nvar onOffElements = flow.get(\"onOffElements\");\nvar buttons = [[]];\nonOffElements.forEach (function (value, index, array){\n    buttons[0].push({\n        text:value.name,\n        callback_data: value.name+\"|on\"\n    })\n})\n\nvar opts = {\n reply_to_message_id: msg.payload.messageId,\n reply_markup: JSON.stringify({\n \"inline_keyboard\": buttons\n })\n};\n\nmsg.payload.type = \"message\";\nmsg.payload.content = 'Pulsa el aparato a encender';\nmsg.payload.options = opts;\nflow.set(\"chatId\",msg.payload.chatId)\nreturn [ msg ];\n",
+        "func": "// context.global.keyboard = { pending : true, messageId : msg.payload.messageId };\n\nvar onOffElements = flow.get(\"onOffElements\");\nvar buttons = [[]];\nonOffElements.forEach (function (value, index, array){\n    buttons[0].push({\n        text:value.name,\n        callback_data: value.name+\"|on\"\n    })\n})\n\nvar opts = {\n reply_to_message_id: msg.payload.messageId,\n reply_markup: JSON.stringify({\n \"inline_keyboard\": buttons\n })\n};\n\nmsg.payload.type = \"message\";\nmsg.payload.content = 'Pulsa el aparato a encender';\nmsg.payload.options = opts;\nreturn [ msg ];\n",
         "outputs": "1",
         "noerr": 0,
         "initialize": "",
@@ -1913,7 +1956,7 @@
         "type": "function",
         "z": "accb50b6.fdff3",
         "name": "initOnOffElements",
-        "func": "var onOffElements=[{name:\"Termostato\"},{name:\"Otro\"}]\nflow.set (\"onOffElements\",onOffElements)\nreturn msg;",
+        "func": "var onOffElements=[{name:\"Termostato\"},{name:\"Otro\"}]\nflow.set (\"onOffElements\",onOffElements)\nflow.set (\"chatId\",-1001237855715)\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -2242,5 +2285,142 @@
                 "9690260f.34a498"
             ]
         ]
+    },
+    {
+        "id": "114cdb3f.b14b45",
+        "type": "mqtt out",
+        "z": "1edb1dee.e38222",
+        "name": "",
+        "topic": "/test/ssl",
+        "qos": "",
+        "retain": "",
+        "broker": "223afa3.14a1f06",
+        "x": 620,
+        "y": 118,
+        "wires": []
+    },
+    {
+        "id": "f8f79941.5b0c38",
+        "type": "inject",
+        "z": "1edb1dee.e38222",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 180,
+        "y": 140,
+        "wires": [
+            [
+                "a225e904.096f38"
+            ]
+        ]
+    },
+    {
+        "id": "a225e904.096f38",
+        "type": "moment",
+        "z": "1edb1dee.e38222",
+        "name": "",
+        "topic": "",
+        "input": "",
+        "inputType": "msg",
+        "inTz": "",
+        "adjAmount": 0,
+        "adjType": "days",
+        "adjDir": "add",
+        "format": "",
+        "locale": "",
+        "output": "",
+        "outputType": "msg",
+        "outTz": "",
+        "x": 390,
+        "y": 140,
+        "wires": [
+            [
+                "114cdb3f.b14b45",
+                "ea3419e4.c88358"
+            ]
+        ]
+    },
+    {
+        "id": "ed5caa8a.2eccb8",
+        "type": "mqtt in",
+        "z": "1edb1dee.e38222",
+        "name": "",
+        "topic": "/test/ssl",
+        "qos": "2",
+        "datatype": "utf8",
+        "broker": "bf95716a.6309c8",
+        "x": 180,
+        "y": 300,
+        "wires": [
+            [
+                "ecde1448.fb8468"
+            ]
+        ]
+    },
+    {
+        "id": "ecde1448.fb8468",
+        "type": "function",
+        "z": "1edb1dee.e38222",
+        "name": "",
+        "func": "node.status({\n    text: msg.payload\n})\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 420,
+        "y": 300,
+        "wires": [
+            [
+                "892a1c13.7207e"
+            ]
+        ]
+    },
+    {
+        "id": "892a1c13.7207e",
+        "type": "debug",
+        "z": "1edb1dee.e38222",
+        "name": "in",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 610,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "ea3419e4.c88358",
+        "type": "debug",
+        "z": "1edb1dee.e38222",
+        "name": "out",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 620,
+        "y": 220,
+        "wires": []
     }
 ]
